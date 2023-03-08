@@ -7,7 +7,7 @@ interface PlateProps {
   divisions: number,
 }
 
-const Plate = ({divisions=25} : PlateProps) => {
+const Plate = ({divisions=24} : PlateProps) => {
   const [cellsOccupied, setCellsOccupied] = React.useState([])
 
   let x = divisions
@@ -18,8 +18,8 @@ const Plate = ({divisions=25} : PlateProps) => {
   return (
     <Box sx={{
       outline: "1px solid red",
-      height: "500px",
-      width: "500px",
+      height: "100%",
+      width: "100%",
       boxSizing: "border-box",
       display: "inline-block",
       position: "relative"
@@ -40,8 +40,8 @@ const Plate = ({divisions=25} : PlateProps) => {
         })}
 
         <Box sx={{
-          width: `80%`,
-          height: `80%`,
+          width: `70%`,
+          height: `70%`,
           position: "absolute",
           top: `${50}%`,
           left: `${50}%`,
@@ -54,7 +54,7 @@ const Plate = ({divisions=25} : PlateProps) => {
         {LANDS.map((land, index) => {
           return <Land 
             key={index}
-            id={`l${index}`}
+            id={`land-${index}`}
             type={land.type}
             setID={land.setID}
             color={land.color}
@@ -69,7 +69,7 @@ const Plate = ({divisions=25} : PlateProps) => {
             image={land.image}
             startPos={land.startPos}
             endPos={land.endPos}
-            divisions={25}
+            divisions={divisions}
           />
         })}
     </Box>

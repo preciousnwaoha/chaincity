@@ -697,3 +697,7 @@ export const SETS = [
         sellable: false,
     },
 ]
+
+export const GAME_STEPS = [
+    
+]
