@@ -1,5 +1,5 @@
+import Plate from '@/components/Plate'
 import Head from 'next/head'
-import Plate from "../components/Plate"
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main >
-       <Plate />
+       <Plate x={20} y={20} />
       </main>
     </>
   )
