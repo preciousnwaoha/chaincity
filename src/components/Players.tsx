@@ -2,27 +2,37 @@ import React from "react"
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
-import { PLAYERS_DUM } from "@/utils/dummy-data"
+import { useSelector } from "react-redux"
+import { RootState } from "@/store"
+
 
 const Players = () => {
-    let currency = "$"
+    const game = useSelector((state: RootState) => state.game)
+    const settings = useSelector((state: RootState) => state.settings)
+
+    const {players, turn} = game
+
+    const {token} = settings
+    let tokenSymbol = token ? token.symbol : "--"
+
 
 
     return <Paper>
-        {PLAYERS_DUM.map((player, index) => {
+        {players.map((player, index) => {
             return <Box key={`p${index}`}>
                 <Box sx={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                     p: 1,
+                    bgcolor: ( player.turn === turn) ?  "rgba(0,0,0,0.1)" : "",
                 }}>
                     <Box sx={{
                         display: "flex",
                         alignItems: "center",
                     }}>
                         <Box sx={{
-                            bgcolor: "rgb(204, 255, 186)",
+                            bgcolor: player.character,
                             width: "35px",
                             height: "35px",
                             borderRadius: 4,
@@ -32,7 +42,7 @@ const Players = () => {
                             ml: 2
                         }}>{player.name}</Typography>
                     </Box>
-                    <Typography variant="body1">{currency}{player.cash}</Typography>
+                    <Typography variant="body1">{tokenSymbol}{player.cash}</Typography>
                 </Box>
             </Box>
         })}

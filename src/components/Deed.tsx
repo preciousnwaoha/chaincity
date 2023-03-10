@@ -2,6 +2,8 @@ import React from "react"
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
+import { useSelector } from "react-redux"
+import { RootState } from "@/store"
 
 
 interface DeedProps {
@@ -17,7 +19,9 @@ interface DeedProps {
           maxHouses: number,
           maxHotels: number,
           houseRentFactor: number,
-          image: string
+          image: string,
+          owner: string,
+          houses: number,
   }
 
   
@@ -35,8 +39,14 @@ const Deed = ({
   maxHotels,
   houseRentFactor,
   image,
+  owner,
+  houses,
 }: DeedProps) => {
-    let currency = "$"
+    const settings = useSelector((state: RootState) => state.settings)
+    const game = useSelector((state: RootState) => state.game)
+
+    const {token} = settings
+    const {players, turn} = game
 
     let priceAtState = price
 
@@ -66,7 +76,12 @@ const Deed = ({
                     bgcolor: "info.main",
                     textTransform: "uppercase",
                     p: 1,
-                }}>rent {currency}{rent}</Typography>
+                }}>rent {token.symbol}{rent}</Typography>
+                <Typography sx={{
+                    bgcolor: "info.main",
+                    textTransform: "uppercase",
+                    p: 1,
+                }}>price {token.symbol}{price}</Typography>
                 
 
                 </Box>

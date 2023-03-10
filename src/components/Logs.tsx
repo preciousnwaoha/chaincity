@@ -2,15 +2,14 @@ import React from 'react'
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
+import { useSelector } from 'react-redux'
+import { RootState } from '@/store'
+
 
 const Logs = () => {
+    const game = useSelector((state: RootState) => state.game)
 
-    const logs  = [
-        {
-            text: "Precious purchased x for y",
-            time: 1666666666,
-        }
-    ]
+    const {logs} = game
 
   return (
     <Paper sx={{
@@ -33,8 +32,8 @@ const Logs = () => {
             justifyContent: "space-between",
             p: 0.5
             }}>
-                <Typography>{log.time}</Typography>
-            <Typography>{log.text}</Typography>
+                <Typography>{`${log.timestamp}`}</Typography>
+            <Typography>{log.message}</Typography>
             </Box>
         })}
     </Paper>

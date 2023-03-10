@@ -6,6 +6,8 @@ import Typography from "@mui/material/Typography"
 import { LandInterface} from "@/utils/data.types";
 import { calculateCellPos, getCellSpans } from "@/utils/functions";
 import LandDetail from "./LandDetail";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -35,6 +37,8 @@ interface LandProps {
         image: string
         startPos: number[],
         endPos: number[],
+        owner: string,
+        houses: number,
   divisions: number,
 }
 
@@ -54,18 +58,28 @@ const Land = ({
   image,
   startPos,
   endPos,
+  owner,
+  houses,
   divisions
 }: LandProps) => {
 
+  const game = useSelector((state: RootState) => state.game)
    const [openDetails, setOpenDetails] = React.useState(false);
+
+  const {players} = game
+
+  let owningPlayer = players.filter(player => player.address === owner)[0]
+
   const handleOpenDetails = () => setOpenDetails(true);
   const handleCloseDetails = () => setOpenDetails(false);
+
+
 
   const {xCord, yCord} = calculateCellPos(startPos, endPos, divisions)
 
   const {rowSpan, columnSpan} = getCellSpans(startPos, endPos)
 
-  console.log(xCord, yCord, rowSpan, columnSpan )
+  // console.log(xCord, yCord, rowSpan, columnSpan )
 
 
   return <>
@@ -77,6 +91,8 @@ const Land = ({
     height: `${((100 / divisions) * rowSpan)}%`,
     bgcolor: "rgba(0,0,0,0.6)",
     cursor: "pointer",
+    border: "2px solid",
+    borderColor: !!owningPlayer ? owningPlayer.character : "transparent",
   }}>
   <Box sx={{
     bgcolor: color,
@@ -139,6 +155,8 @@ const Land = ({
             maxHotels={maxHotels}
             houseRentFactor={houseRentFactor}
             image={image}
+            owner={owner}
+            houses={houses}
           />
         </Box>
       </Modal>

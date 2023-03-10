@@ -2,37 +2,45 @@ export const PLAYERS_DUM = [
     {
         name: "Precious",
         address: "p1",
-        cash: 12500,
         lands: [
             "l1,",
         ],
-        character: "june",
+        character: "pink",
+        cash: 0,
+        position: "land-1",
+        turn: 0,
     },
     {
         name: "Precious2",
         address: "p2",
-        cash: 12500,
         lands: [
             "l1,",
         ],
-        character: "jake"
+        character: "yellow",
+        cash: 0,
+        position: "land-1",
+        turn: 1,
     },
     {
         name: "Precious3",
         address: "p3",
-        cash: 12500,
         lands: [
             "l1,",
         ],
-        character: "john"
+        character: "orange",
+        cash: 0,
+        position: "land-1",
+        turn: 2,
     },
     {
         name: "Precious4",
         address: "p4",
-        cash: 12500,
         lands: [
             "l1,",
         ],
-        character: "jess"
+        character: "blue",
+        cash: 0,
+        position: "land-1",
+        turn: 3,
     }
 ]

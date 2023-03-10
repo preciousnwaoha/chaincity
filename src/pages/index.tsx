@@ -1,12 +1,73 @@
 import Plate from '@/components/Plate'
 import Head from 'next/head'
-import Grid from "@mui/material/Grid"
+import Button from "@mui/material/Button"
 import Box from "@mui/material/Box"
-import Players from '@/components/Players'
-import Bank from '@/components/Bank'
-import Logs from '@/components/Logs'
+import { useDispatch } from 'react-redux'
+import { gameActions } from '@/store/game-slice'
+import { PLAYERS_DUM } from '@/utils/dummy-data'
+import { LANDS } from '@/utils/monopoly-data'
+import { useRouter } from 'next/router'
 
 export default function Home() {
+  const router = useRouter()
+  const dispatch = useDispatch();
+
+  const usedLands = LANDS.map((land, index) => {
+    return {
+      id: `land-${index + 1}`,
+      type: land.type,
+    setID: land.setID,
+    color: land.color,
+    name: land.name,
+    rent: land.rent,
+    mortgageFactor: land.mortgageFactor,
+    unmortgageFactor: land.unmortgageFactor,
+    price: land.price,
+    maxHouses: land.maxHouses,
+    maxHotels: land.maxHotels,
+    houseRentFactor: land.houseRentFactor,
+    image: land.image,
+    startPos: land.startPos,
+    endPos: land.endPos,
+    owner: "",
+    houses: 0,
+    }
+  
+  })
+
+  let gameStepSequence = [...usedLands.map((_, index) => `land-${index + 1}`)]
+
+  let modifiedPlayers = PLAYERS_DUM.map((player, index) => {
+    return {
+      name: player.name,
+      address: player.address,
+      lands: player.lands,
+      character: player.character,
+      cash: 15000,
+      turn: player.turn,
+      position: gameStepSequence[0]
+    }
+  })
+
+  const handleStartGame = () => {
+    dispatch(gameActions.setup({
+      playing: true,
+      lands: usedLands,
+    gameStepSequence,
+    players: modifiedPlayers,
+    startingCash: 15000,
+      logs: [
+        {
+          timestamp: new Date().getTime(),
+          message: "Game Started",
+        }
+      ],
+      bankCash: 100000, 
+      turn: 0,
+    }))
+
+    router.push("/game")
+  }
   return (
     <>
       <Head>
@@ -16,32 +77,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main >
-        <Grid container sx={{
-          width: "100vw",
-          height: "100vh",
-        }}>
-          <Grid item md={8} sx={{
-          height: "100%",
-        }}>
-            <Plate divisions={24} />
-          </Grid>
-
-          <Grid item md={4} sx={{
-          height: "100%",
-        }}>
-              <Box sx={{
-                width: "100%",
-                height: "100%",
-                outline: "1px solid blue"
-              }}>
-                <Players />
-                <Bank />
-                <Logs />
-              </Box>
-          </Grid>
-
-        </Grid>
-       
+        <Box>
+          <Button onClick={handleStartGame}>PLAY</Button>
+        </Box>
       </main>
     </>
   )

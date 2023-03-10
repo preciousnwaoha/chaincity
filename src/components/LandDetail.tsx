@@ -19,7 +19,9 @@ interface LandDetailProps {
           maxHouses: number,
           maxHotels: number,
           houseRentFactor: number,
-          image: string
+          image: string,
+          owner: string,
+          houses: number
   }
 
 const LandDetail = ({
@@ -36,6 +38,8 @@ const LandDetail = ({
   maxHotels,
   houseRentFactor,
   image,
+  owner,
+  houses,
 }: LandDetailProps) => {
     let currency = "$"
 
@@ -69,6 +73,8 @@ const LandDetail = ({
                 maxHotels={maxHotels}
                 houseRentFactor={houseRentFactor}
                 image={image}
+                owner={owner}
+                houses={houses}
             />
              
         </Box>
