@@ -681,16 +681,16 @@ export const LANDS = [
     },
 ]
 
-export const SETS = [
+export const LAND_SETS = [
     {
-        id: "s1",
+        id: "set-1",
         name: "",
         color: "red",
         rentWithSetFactor: 0,
         sellable: false,
     },
     {
-        id: "s2",
+        id: "set-2",
         name: "Precious Avenue",
         color: "red",
         rentWithSetFactor: 2,

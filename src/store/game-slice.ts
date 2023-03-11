@@ -1,4 +1,4 @@
-import { LandInterface, LogInterface, PlayerInterface } from "@/utils/data.types";
+import { LandInterface, LandSetInterface, LogInterface, PlayerInterface } from "@/utils/data.types";
 import { getLandFromID } from "@/utils/functions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -8,21 +8,27 @@ export interface GameState {
     playing: boolean,
     lands: LandInterface[],
     gameStepSequence: string[],
+    landSets: LandSetInterface[],
     players: PlayerInterface[],
     startingCash: number,
     logs: LogInterface[],
     bankCash: number,
+    bankLands: string[]
+    bankHoldings: string[],
     turn: number,
 }
 
 const initialState: GameState = {
     playing: false,
     lands: [],
+    landSets: [],
     gameStepSequence: [],
     players: [],
     startingCash: 0,
     logs: [],
     bankCash: 0, 
+    bankLands: [],
+    bankHoldings: [],
     turn: 0,
 }
 
@@ -35,6 +41,7 @@ const gameSlice = createSlice( {
             state.lands = action.payload.lands
             state.players = action.payload.players
             state.gameStepSequence = action.payload.gameStepSequence
+            state.landSets = action.payload.landSets
             state.startingCash = action.payload.startingCash
             state.logs = action.payload.logs
             state.bankCash = action.payload.bankCash
@@ -145,34 +152,124 @@ const gameSlice = createSlice( {
 
         },
         payRent(state, action: PayloadAction<{player: number, landID: string}>) {
-            let land = state.lands.filter(land => land.id === action.payload.landID)[0]
+            // ...
+        },
+        mortgage(state, action: PayloadAction<{player: number, landID: string}>) {
+            let updatedPlayers = [...state.players]
+            let updatedLands = [...state.lands]
+            let land = updatedLands.filter(land => land.id === action.payload.landID)[0]
 
-            let playerObj = state.players[action.payload.player]
-            console.log({player: action.payload.player, playerObj, players: state.players})
-            playerObj.cash -= land.rent
+            let playerObj = updatedPlayers[action.payload.player]
 
-            let playerThatOwnsLand = state.players.filter(player => land.owner === player.address)[0]
-            let indexOfPlayerThatOwnsLand = state.players.indexOf(playerThatOwnsLand)
-            console.log({playerThatOwnsLand, indexOfPlayerThatOwnsLand})
-            playerThatOwnsLand.cash += land.rent
-
-
-
-            let playersRemoved = state.players.filter((_, index) => (index !== action.payload.player) && (index !== indexOfPlayerThatOwnsLand))
+            playerObj.cash += land.price * land.mortgageFactor
+            state.bankCash -=  land.price * land.mortgageFactor
+            state.bankHoldings.push(action.payload.landID)
             
-            let newPlayers = []
-            let a = playersRemoved.slice(0, indexOfPlayerThatOwnsLand)
-            let b = playersRemoved.slice(indexOfPlayerThatOwnsLand)
+            // remove land from player
+            let newPlayerLands = playerObj.lands.filter(land => land !== action.payload.landID)
+            playerObj.lands = newPlayerLands
 
-            newPlayers = [...a, playerThatOwnsLand, ...b]
+            // ret land "mortgaged" prop to true
+            land.mortgaged = true
 
-            let x = newPlayers.slice(0, action.payload.player)
-            let y = newPlayers.slice(action.payload.player)
+            // update state.lands
+            let indexOfLand = updatedLands.indexOf(land)
+            updatedLands =  updatedLands.filter(land => land.id !== action.payload.landID)
+            let u = updatedLands.slice(0, indexOfLand)
+            let v = updatedLands.slice(indexOfLand)
+            updatedLands = [...u, land, ...v]
+            state.lands = updatedLands
 
-            newPlayers = [...x, playerObj, ...y]
+            // update state.players
+            updatedPlayers = updatedPlayers.filter((_, index) => index !== action.payload.player)
+            let a = updatedPlayers.slice(0, action.payload.player)
+            let b = updatedPlayers.slice(action.payload.player)
+            updatedPlayers = [...a, playerObj, ...b]
+            state.players = updatedPlayers
+        },
+        unmortgage(state, action: PayloadAction<{player: number, landID: string}>) {
+            let updatedPlayers = [...state.players]
+            let updatedLands = [...state.lands]
 
-            console.log(newPlayers)
-            state.players = newPlayers;
+            let land = updatedLands.filter(land => land.id === action.payload.landID)[0]
+            let playerObj = updatedPlayers[action.payload.player]
+
+            playerObj.cash -= land.price * land.mortgageFactor
+            state.bankCash +=  land.price * land.mortgageFactor
+
+            // remove land from bank
+            state.bankHoldings = state.bankHoldings.filter(holding => holding !== action.payload.landID)
+            
+            // add land to player
+            playerObj.lands.push(action.payload.landID)
+
+            // set land "mortgaged" prop to false
+            land.mortgaged = false
+
+            // update state.lands
+            let indexOfLand = updatedLands.indexOf(land)
+            updatedLands =  updatedLands.filter(land => land.id !== action.payload.landID)
+            let u = updatedLands.slice(0, indexOfLand)
+            let v = updatedLands.slice(indexOfLand)
+            updatedLands = [...u, land, ...v]
+            state.lands = updatedLands
+
+            // update state.players
+            updatedPlayers = updatedPlayers.filter((_, index) => index !== action.payload.player)
+            let a = updatedPlayers.slice(0, action.payload.player)
+            let b = updatedPlayers.slice(action.payload.player)
+            updatedPlayers = [...a, playerObj, ...b]
+            state.players = updatedPlayers
+        },
+        trade(state, action: PayloadAction<{
+            from: number,
+            to: number,
+            cashFrom: number,
+            cashTo: number,
+            landIDsFrom: string[],
+            landIDsTo: string[]
+        }>) {
+            let updatedLands = [...state.lands]
+            let updatedPlayers = [...state.players]
+
+            // let landsFrom = action.payload.landIDsFrom.map(id => getLandFromID(id, updatedLands))
+            // let landsTo = action.payload.landIDsTo.map(id => getLandFromID(id, updatedLands))
+            let playerFromObj = updatedPlayers[action.payload.from]
+            let playerToObj = updatedPlayers[action.payload.to]
+
+            // remove sendings lands from trader
+            playerFromObj.lands = playerFromObj.lands.filter(id => !action.payload.landIDsFrom.includes(id))
+            // add recieving lands to trader
+            playerFromObj.lands.concat(action.payload.landIDsTo)
+            
+
+            // remove sendings lands from trader
+            playerToObj.lands = playerToObj.lands.filter(id => !action.payload.landIDsTo.includes(id))
+            // add recieving lands to trader
+            playerToObj.lands.concat(action.payload.landIDsFrom)
+
+            // update lands
+            updatedLands = updatedLands.map(land => {
+                let sendFromTo = (land.owner === playerFromObj.address) && action.payload.landIDsFrom.includes(land.id)
+                let sendToFrom = (land.owner === playerToObj.address) && action.payload.landIDsTo.includes(land.id)
+                if (sendFromTo) {
+                    return {
+                        ...land,
+                        owner: playerToObj.address
+                    }
+                } else if (sendToFrom) {
+                    return {
+                        ...land,
+                        owner: playerFromObj.address
+                    }
+                }
+                else {
+                    return land
+                }
+            })
+
+            state.lands = updatedLands
+
 
         }
     }

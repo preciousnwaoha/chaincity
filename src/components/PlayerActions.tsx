@@ -6,10 +6,11 @@ import Typography from "@mui/material/Typography"
 import Modal from '@mui/material/Modal';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import { getLandFromID } from '@/utils/functions'
+import { getHousesBuiltInSet, getLandFromID } from '@/utils/functions'
 import Deed from './Deed'
 import { gameActions } from '@/store/game-slice'
 import PayingRent from './PayingRent'
+import Trade from './Trade'
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -32,7 +33,8 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
   const dispatch = useDispatch()
   const game = useSelector((state: RootState) => state.game)
   const [actioning, setActioning] = React.useState(false)
-  const [paidRent, setPaidRent] = React.useState(false)
+  // const [paidRent, setPaidRent] = React.useState(false)
+  const [trading, setTrading] = React.useState(false)
 
   const {turn, players, lands} = game
 
@@ -46,8 +48,13 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     const isOwner = land.owner === player.address
 
     const playerHasCashToBuy = land.price <= player.cash
-    const playerHasCashToUnmortgage = (land.unmortgageFactor * land.price) <= player.cash
+    const playerCanUnmortgage = ((land.unmortgageFactor * land.price) <= player.cash) && land.mortgaged
     const playerHasCashToBuild = (land.rent * 10) <= player.cash
+
+    const housesBuiltInSet = getHousesBuiltInSet(land.setID, lands)
+
+
+    const playerCanMortgage = (land.mortgaged === false) && (housesBuiltInSet === 0)
 
     const handleBuy = () => {
       console.log("buy")
@@ -71,13 +78,22 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     }
 
     const handleMortgage = () => {
+      if (playerCanMortgage) {
+        dispatch(gameActions.mortgage({player: turn, landID}))
+      }
       console.log("Mortgage")
     }
     const handleUnmortgage = () => {
+      if (playerCanUnmortgage) {
+        dispatch(gameActions.unmortgage({player: turn, landID}))
+      }
       console.log("Unmortgage")
     }
-    const handleTrade = () => {
-      console.log("Trade")
+    const handleOpenTrading = () => {
+      setTrading(true)
+    }
+    const handleCloseTrading = () => {
+      setTrading(false)
     }
 
     
@@ -123,17 +139,17 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     {isOwner &&<>
       <Button onClick={handleBuild} disabled={playerHasCashToBuild}>BUILD</Button>
       <Button onClick={handleSell} >SELL</Button>
-      <Button onClick={handleMortgage} >MORTGAGE</Button>
-      <Button onClick={handleUnmortgage} disabled={playerHasCashToUnmortgage}>UNMORTGAGE</Button>
+      <Button onClick={handleMortgage} disabled={!playerCanMortgage}>MORTGAGE</Button>
+      <Button onClick={handleUnmortgage} disabled={!playerCanUnmortgage}>UNMORTGAGE</Button>
 
     </>}
     </Box>
     <Box>
       <Button onClick={handleFinish}>FINISH</Button>
-      <Button onClick={handleTrade}>TRADE</Button>
+      <Button onClick={handleOpenTrading}>TRADE</Button>
     </Box>
   
-  
+  <Trade open={trading} onClose={handleCloseTrading} />
 </Paper>
   </Box>
 </Modal>}

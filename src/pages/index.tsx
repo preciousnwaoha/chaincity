@@ -5,7 +5,7 @@ import Box from "@mui/material/Box"
 import { useDispatch } from 'react-redux'
 import { gameActions } from '@/store/game-slice'
 import { PLAYERS_DUM } from '@/utils/dummy-data'
-import { LANDS } from '@/utils/monopoly-data'
+import { LANDS, LAND_SETS } from '@/utils/monopoly-data'
 import { useRouter } from 'next/router'
 
 export default function Home() {
@@ -22,6 +22,7 @@ export default function Home() {
     rent: land.rent,
     mortgageFactor: land.mortgageFactor,
     unmortgageFactor: land.unmortgageFactor,
+    mortgaged: false,
     price: land.price,
     maxHouses: land.maxHouses,
     maxHotels: land.maxHotels,
@@ -62,8 +63,11 @@ export default function Home() {
           message: "Game Started",
         }
       ],
-      bankCash: 100000, 
+      bankCash: 100000,
+      bankLands: [], 
+      bankHoldings: [],
       turn: 0,
+      landSets: LAND_SETS
     }))
 
     router.push("/game")

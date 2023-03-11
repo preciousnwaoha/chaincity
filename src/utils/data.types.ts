@@ -10,12 +10,21 @@ export interface LandInterface  {
     price: number,
     maxHouses: number,
     maxHotels: number,
+    mortgaged: boolean,
     houseRentFactor: number,
     image: string,
     startPos: number[],
     endPos: number[],
     owner: string,
     houses: number,
+}
+
+export interface LandSetInterface {
+    id: string,
+    name: string,
+    color: string,
+    rentWithSetFactor: number,
+    sellable: boolean,
 }
 
 export interface LogInterface {

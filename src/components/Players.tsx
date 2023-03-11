@@ -4,13 +4,17 @@ import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import { useSelector } from "react-redux"
 import { RootState } from "@/store"
+import { groupPlayerLandsInSets } from "@/utils/functions"
+import PlayerLandsInSets from "./PlayerLandsInSets"
 
 
 const Players = () => {
     const game = useSelector((state: RootState) => state.game)
     const settings = useSelector((state: RootState) => state.settings)
 
-    const {players, turn} = game
+    const {players, turn, lands} = game
+
+    const landsGroupedInSets = groupPlayerLandsInSets(players[turn].lands, lands)
 
     const {token} = settings
     let tokenSymbol = token ? token.symbol : "--"
@@ -44,6 +48,7 @@ const Players = () => {
                     </Box>
                     <Typography variant="body1">{tokenSymbol}{player.cash}</Typography>
                 </Box>
+                {( player.turn === turn) && <PlayerLandsInSets groupedLands={landsGroupedInSets} />}
             </Box>
         })}
     </Paper>

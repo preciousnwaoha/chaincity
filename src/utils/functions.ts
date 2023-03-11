@@ -66,3 +66,44 @@ export const getPlayerNextPosition = (_dice1: number, _dice2: number, _currentPo
 
 }
 
+
+type LandGroupType = LandInterface[]
+export const groupPlayerLandsInSets = (landIDs: string[], allLands: LandInterface[]) => {
+    let playerLands = landIDs.map(id => getLandFromID(id, allLands))
+    let setsFromLands = allLands.map(land => land.setID)
+    let sets = setsFromLands.filter((set, index) => setsFromLands.indexOf(set) === index )
+
+    
+    let landsGrouped : LandGroupType[] = []
+
+    for (let i = 0; i < sets.length; i++) {
+        let arr:LandInterface[] = []
+        for (let land of playerLands) {
+            console.log(land)
+            if (land.setID === sets[i]) {
+                arr.push(land)
+            }
+        }
+        landsGrouped.push(arr)
+    }
+
+    return landsGrouped
+
+
+}
+export const getLandsWithSameSetAs = (land:LandInterface, lands: LandInterface[])  => {
+    return lands.filter(_land => _land.setID === land.setID )
+}
+
+export const getHousesBuiltInSet = (setID: string, lands:LandInterface[]) => {
+    let houses = 0
+
+    let setLands = lands.filter(land => land.setID === setID)
+
+    for (let land of setLands) {
+        houses += land.houses
+    }
+
+    return houses
+}
+

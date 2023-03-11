@@ -2,9 +2,7 @@ export const PLAYERS_DUM = [
     {
         name: "Precious",
         address: "p1",
-        lands: [
-            "l1,",
-        ],
+        lands: [],
         character: "pink",
         cash: 0,
         position: "land-1",
@@ -13,9 +11,7 @@ export const PLAYERS_DUM = [
     {
         name: "Precious2",
         address: "p2",
-        lands: [
-            "l1,",
-        ],
+        lands: [],
         character: "yellow",
         cash: 0,
         position: "land-1",
@@ -24,9 +20,7 @@ export const PLAYERS_DUM = [
     {
         name: "Precious3",
         address: "p3",
-        lands: [
-            "l1,",
-        ],
+        lands: [],
         character: "orange",
         cash: 0,
         position: "land-1",
@@ -35,9 +29,7 @@ export const PLAYERS_DUM = [
     {
         name: "Precious4",
         address: "p4",
-        lands: [
-            "l1,",
-        ],
+        lands: [],
         character: "blue",
         cash: 0,
         position: "land-1",
