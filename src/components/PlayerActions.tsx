@@ -40,10 +40,11 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
 
     const player = players[turn]
 
-    const {position: landID, cash} = player
+    const {position: landID, cash, pendingRent, trades} = player
 
     const land = getLandFromID(landID, lands)
 
+    
     const hasOwner = !!land.owner
     const isOwner = land.owner === player.address
 
@@ -53,55 +54,83 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
 
     const housesBuiltInSet = getHousesBuiltInSet(land.setID, lands)
 
+    const playerCanPayRent = (land.rent <= player.cash)
+
+    // const playerCanBankrupt = 
 
     const playerCanMortgage = (land.mortgaged === false) && (housesBuiltInSet === 0)
 
     const handleBuy = () => {
       console.log("buy")
-
+      setActioning(true)
       dispatch(gameActions.buyLand({player: turn, landID}))
+      setActioning(false)
     }
 
-
-    // useEffect(() => {
-    //   setPaidRent(true)
-    // }, [paidRent])
 
     
     
     const handleBuild = () => {
       console.log("build")
+      setActioning(true)
+      setActioning(false)
     }
 
     const handleSell = () => {
       console.log("sell")
+      setActioning(true)
+      setActioning(false)
     }
 
     const handleMortgage = () => {
+
       if (playerCanMortgage) {
+        setActioning(true)
         dispatch(gameActions.mortgage({player: turn, landID}))
+        setActioning(false)
       }
       console.log("Mortgage")
     }
     const handleUnmortgage = () => {
       if (playerCanUnmortgage) {
+        setActioning(true)
         dispatch(gameActions.unmortgage({player: turn, landID}))
+        setActioning(false)
       }
       console.log("Unmortgage")
     }
     const handleOpenTrading = () => {
+      setActioning(true)
       setTrading(true)
     }
     const handleCloseTrading = () => {
       setTrading(false)
+      setActioning(false)
     }
 
-    
+    const handleDeclareBankrupcy = () => {
+      let landOwnerIndex = players.length
+
+      for (let i = 0; i < players.length; i++) {
+        if (players[i].address === land.owner) {
+          landOwnerIndex = i
+        }
+      }
+
+      dispatch(gameActions.bankrupt({player: turn, bankrupter: landOwnerIndex}))
+
+    }
 
     const handleFinish = () => {
         onFinishTurn()
     }
     
+      useEffect(() => {
+        if (pendingRent) {
+          dispatch(gameActions.payRent({player: turn, landID}))
+        }
+      }, [pendingRent, dispatch, turn, landID])
+
       
 
 
@@ -109,7 +138,14 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     <>
     {actioning
     ? 
-    <PayingRent open={actioning} land={land} player={turn} />
+    <>
+      {playerCanPayRent ? 
+      <PayingRent open={pendingRent} land={land} player={turn} />
+      : <Button onClick={handleDeclareBankrupcy}>Bankrupt</Button>
+    }
+    <Trade open={trading} onClose={handleCloseTrading} />
+    </>
+    
   :  <Modal
   open={open}
   aria-labelledby="modal-modal-title"
@@ -149,7 +185,7 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
       <Button onClick={handleOpenTrading}>TRADE</Button>
     </Box>
   
-  <Trade open={trading} onClose={handleCloseTrading} />
+  
 </Paper>
   </Box>
 </Modal>}

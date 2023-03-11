@@ -46,7 +46,10 @@ export default function Home() {
       character: player.character,
       cash: 15000,
       turn: player.turn,
-      position: gameStepSequence[0]
+      trades: [],
+      position: gameStepSequence[0],
+      pendingRent: false,
+      bankrupt: false,
     }
   })
 

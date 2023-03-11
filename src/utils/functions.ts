@@ -79,7 +79,6 @@ export const groupPlayerLandsInSets = (landIDs: string[], allLands: LandInterfac
     for (let i = 0; i < sets.length; i++) {
         let arr:LandInterface[] = []
         for (let land of playerLands) {
-            console.log(land)
             if (land.setID === sets[i]) {
                 arr.push(land)
             }

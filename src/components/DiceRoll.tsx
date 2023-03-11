@@ -33,8 +33,8 @@ const DiceRoll = ({onRollDice}: DiceRollProps) => {
 
 
     const handleDiceRoll = () => {
-        let dice1 = Math.ceil(Math.random() * 6)
-        let dice2 = Math.ceil(Math.random() * 6)
+        let dice1 =5 //  Math.ceil(Math.random() * 6)
+        let dice2 =4 // Math.ceil(Math.random() * 6)
 
         setRolling(true)
 

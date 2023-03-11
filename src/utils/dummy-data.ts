@@ -7,6 +7,7 @@ export const PLAYERS_DUM = [
         cash: 0,
         position: "land-1",
         turn: 0,
+        pendingRent: false,
     },
     {
         name: "Precious2",
@@ -16,6 +17,7 @@ export const PLAYERS_DUM = [
         cash: 0,
         position: "land-1",
         turn: 1,
+        pendingRent: false,
     },
     {
         name: "Precious3",
@@ -25,6 +27,7 @@ export const PLAYERS_DUM = [
         cash: 0,
         position: "land-1",
         turn: 2,
+        pendingRent: false,
     },
     {
         name: "Precious4",
@@ -34,5 +37,6 @@ export const PLAYERS_DUM = [
         cash: 0,
         position: "land-1",
         turn: 3,
+        pendingRent: false,
     }
 ]

@@ -9,6 +9,7 @@ import PlayerActions from './PlayerActions'
 import { gameActions } from '@/store/game-slice'
 import { getLandFromID, getPlayerNextPosition } from '@/utils/functions'
 import { LandInterface } from '@/utils/data.types'
+import Trade from './Trade'
 // import PayingRent from './PayingRent'
 
 interface PlateProps {
@@ -22,6 +23,7 @@ const Plate = ({divisions} : PlateProps) => {
   const [showCurrentPlayerActions, setShowCurrentPlayerActions] = React.useState(false)
   // const [cellsOccupied, setCellsOccupied] = React.useState([])
   // const [playerMoved, setPlayerMoved] = React.useState(false)
+  const [showPendingTradeOffers, setShowPendingTradeOffers] = React.useState(false)
 
 
 
@@ -32,7 +34,8 @@ const Plate = ({divisions} : PlateProps) => {
   
   const player = players[turn]
   console.log(player.position)
-  const {position} = player
+  const {position, trades} = player
+  const offers = trades.filter(trade => trade.from !== turn)
   
   let x = divisions
   let y = divisions
@@ -70,7 +73,16 @@ const Plate = ({divisions} : PlateProps) => {
     dispatch(gameActions.nextTurn())
   }
 
-  
+  const handleCloseTrade = () => {
+    setShowPendingTradeOffers(false)
+  }
+
+  useEffect(() => {
+    if (offers.length > 0) {
+      setShowPendingTradeOffers(true)
+    }
+    console.log(offers)
+  }, [turn, offers])
 
 
 
@@ -143,9 +155,9 @@ const Plate = ({divisions} : PlateProps) => {
           />
         })}
         
-        <DiceRoll onRollDice={handleRollDice} />
+        {!showPendingTradeOffers && <DiceRoll onRollDice={handleRollDice} />}
         {showCurrentPlayerActions && <PlayerActions open={showCurrentPlayerActions} onFinishTurn={handleFinishTurn} />}
-        
+        <Trade open={showPendingTradeOffers} onClose={handleCloseTrade}/>
     </Box>
   )
 }

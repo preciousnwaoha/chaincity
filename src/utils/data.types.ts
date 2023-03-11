@@ -31,6 +31,14 @@ export interface LogInterface {
     message: string,
     timestamp: number,
 }
+export interface TradeInterface {
+    from: number,
+            to: number,
+            cashFrom: number,
+            cashTo: number,
+            landIDsFrom: string[],
+            landIDsTo: string[]
+}
 
 export interface PlayerInterface {
     name: string,
@@ -40,4 +48,8 @@ export interface PlayerInterface {
     cash: number,
     lands: string[],
     turn: number,
+    pendingRent: boolean,
+    trades: TradeInterface[],
+    bankrupt: boolean,
 }
+

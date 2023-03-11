@@ -1,4 +1,4 @@
-import { LandInterface, LandSetInterface, LogInterface, PlayerInterface } from "@/utils/data.types";
+import { LandInterface, LandSetInterface, LogInterface, PlayerInterface, TradeInterface } from "@/utils/data.types";
 import { getLandFromID } from "@/utils/functions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -72,8 +72,6 @@ const gameSlice = createSlice( {
         moveTo(state, action: PayloadAction<{player: number, landID: string}>) {
             let updatedPlayers = [...state.players]
 
-            let land = state.lands.filter(land => land.id === action.payload.landID)[0]
-
             let playerObj = updatedPlayers[action.payload.player]
             let playersWithoutPlayer = updatedPlayers.filter((_, index) => index !== action.payload.player)
 
@@ -82,37 +80,13 @@ const gameSlice = createSlice( {
              */
             // move player
             playerObj.position = action.payload.landID
+            playerObj.pendingRent = true
 
             // FIX PLAYER INTO PLAYERS ARRAY
             let a = playersWithoutPlayer.slice(0, action.payload.player)
             let b = playersWithoutPlayer.slice(action.payload.player)
 
             updatedPlayers = [...a, playerObj, ...b]
-
-            /**
-             * RENT LOGIC
-             */
-            let hasOwner = !!land.owner
-            let playerIsOwner = land.owner === playerObj.address
-            
-            if (hasOwner && !playerIsOwner) {
-                let ownerPlayerObj = updatedPlayers.filter(player => land.owner === player.address)[0]
-                let ownerPlayer = updatedPlayers.indexOf(ownerPlayerObj)
-
-                let playersWithoutOwnerPlayer = updatedPlayers.filter((_, index) => (index !== ownerPlayer))
-                console.log({ownerPlayerObj, ownerPlayer})
-
-                // pay rent
-                playerObj.cash -= land.rent
-                ownerPlayerObj.cash += land.rent
-
-                // FIX OWNER PLAYER INTO PLAYERS ARRAY
-                let x = playersWithoutOwnerPlayer.slice(0, ownerPlayer)
-                let y = playersWithoutOwnerPlayer.slice(ownerPlayer)
-
-                updatedPlayers = [...x, ownerPlayerObj, ...y]
-            }
-        
 
             state.players = updatedPlayers;
             
@@ -152,7 +126,44 @@ const gameSlice = createSlice( {
 
         },
         payRent(state, action: PayloadAction<{player: number, landID: string}>) {
-            // ...
+            let updatedPlayers = [...state.players]
+
+            let land = state.lands.filter(land => land.id === action.payload.landID)[0]
+
+            let playerObj = updatedPlayers[action.payload.player]
+
+            /**
+             * RENT LOGIC
+             */
+            let hasOwner = !!land.owner
+            let playerIsOwner = land.owner === playerObj.address
+            playerObj.pendingRent = false
+            
+            if (hasOwner && !playerIsOwner) {
+                let ownerPlayerObj = updatedPlayers.filter(player => land.owner === player.address)[0]
+                let ownerPlayer = updatedPlayers.indexOf(ownerPlayerObj)
+
+                
+
+                // pay rent
+                playerObj.cash -= land.rent
+                ownerPlayerObj.cash += land.rent
+
+                // fix player into players array
+                updatedPlayers = updatedPlayers.filter((_, index) => (index !== action.payload.player))
+                let a = updatedPlayers.slice(0, action.payload.player)
+                let b = updatedPlayers.slice( action.payload.player)
+                updatedPlayers = [...a, playerObj, ...b]
+
+                // fix owner into players array
+                updatedPlayers = updatedPlayers.filter((_, index) => (index !== ownerPlayer))
+                let x = updatedPlayers.slice(0, ownerPlayer)
+                let y = updatedPlayers.slice(ownerPlayer)
+                updatedPlayers = [...x, ownerPlayerObj, ...y]
+            }
+        
+
+            state.players = updatedPlayers;
         },
         mortgage(state, action: PayloadAction<{player: number, landID: string}>) {
             let updatedPlayers = [...state.players]
@@ -221,55 +232,193 @@ const gameSlice = createSlice( {
             updatedPlayers = [...a, playerObj, ...b]
             state.players = updatedPlayers
         },
-        trade(state, action: PayloadAction<{
-            from: number,
-            to: number,
-            cashFrom: number,
-            cashTo: number,
-            landIDsFrom: string[],
-            landIDsTo: string[]
-        }>) {
+        acceptTrade(state, action: PayloadAction<{player: number, trader: number}>) {
             let updatedLands = [...state.lands]
             let updatedPlayers = [...state.players]
 
-            // let landsFrom = action.payload.landIDsFrom.map(id => getLandFromID(id, updatedLands))
-            // let landsTo = action.payload.landIDsTo.map(id => getLandFromID(id, updatedLands))
-            let playerFromObj = updatedPlayers[action.payload.from]
-            let playerToObj = updatedPlayers[action.payload.to]
+            let playerObj = updatedPlayers[action.payload.player]
+            let traderObj = updatedPlayers[action.payload.trader]
 
-            // remove sendings lands from trader
-            playerFromObj.lands = playerFromObj.lands.filter(id => !action.payload.landIDsFrom.includes(id))
-            // add recieving lands to trader
-            playerFromObj.lands.concat(action.payload.landIDsTo)
+            const trade: TradeInterface = playerObj.trades.filter(trade => ((trade.from === action.payload.trader) && (trade.to === action.payload.player)))[0]
+            const { from, to, cashFrom, cashTo, landIDsFrom, landIDsTo} = trade
+
+            console.log(trade)
+        
+
+            // TRADE LANDS
+            // remove lands from trader
+            traderObj.lands = traderObj.lands.filter(id => !landIDsFrom.includes(id))
+            // add removed trader lands to player-
+            playerObj.lands = [...playerObj.lands, ...landIDsFrom]
+
+            console.log("playerObj.lands", playerObj.lands)
             
+            // remove lands from player
+            playerObj.lands = playerObj.lands.filter(id => !landIDsTo.includes(id))
+            // add player lands to trader
+            traderObj.lands = [...traderObj.lands, ...landIDsTo]
+            console.log("traderObj.lands", traderObj.lands)
 
-            // remove sendings lands from trader
-            playerToObj.lands = playerToObj.lands.filter(id => !action.payload.landIDsTo.includes(id))
-            // add recieving lands to trader
-            playerToObj.lands.concat(action.payload.landIDsFrom)
+            // TRADE CASH
+            playerObj.cash += (cashFrom - cashTo)
+            traderObj.cash += (cashTo - cashFrom)
+
+            // REMOVE TRADE
+            // remove trade from trader
+            traderObj.trades = traderObj.trades.filter(trade => !((trade.from === action.payload.trader) && (trade.to === action.payload.player)))
+            // remove trade from player
+            playerObj.trades = traderObj.trades.filter(trade => !((trade.from === action.payload.trader) && (trade.to === action.payload.player)))
+
+            // UPDATE PLAYERS STATE
+            // update players with trader
+            updatedPlayers = updatedPlayers.filter((_, index) => index !== from)
+            let a = updatedPlayers.slice(0, from)
+            let b = updatedPlayers.slice(from)
+            updatedPlayers = [...a, traderObj, ...b]
+            // update players with player
+            updatedPlayers = updatedPlayers.filter((_, index) => index !== to)
+            let x = updatedPlayers.slice(0, to)
+            let y = updatedPlayers.slice(to)
+            updatedPlayers = [...x, playerObj, ...y]
+
+            
+            state.players = updatedPlayers
 
             // update lands
             updatedLands = updatedLands.map(land => {
-                let sendFromTo = (land.owner === playerFromObj.address) && action.payload.landIDsFrom.includes(land.id)
-                let sendToFrom = (land.owner === playerToObj.address) && action.payload.landIDsTo.includes(land.id)
+                let sendFromTo = (land.owner === playerObj.address) && landIDsTo.includes(land.id)
+                let sendToFrom = (land.owner === traderObj.address) && landIDsFrom.includes(land.id)
                 if (sendFromTo) {
                     return {
                         ...land,
-                        owner: playerToObj.address
+                        owner: traderObj.address
                     }
                 } else if (sendToFrom) {
                     return {
                         ...land,
-                        owner: playerFromObj.address
+                        owner: playerObj.address
                     }
                 }
                 else {
                     return land
                 }
             })
-
             state.lands = updatedLands
 
+
+
+        },
+        placeTrade(state, action: PayloadAction<TradeInterface>) {
+            let updatedPlayers = [...state.players]
+
+            let traderObj = updatedPlayers[action.payload.from]
+            let tradeeObj = updatedPlayers[action.payload.to]
+
+            traderObj.trades.push(action.payload)
+            tradeeObj.trades.push(action.payload)
+
+             // update players with trader
+             updatedPlayers = updatedPlayers.filter((_, index) => index !== action.payload.from)
+             let a = updatedPlayers.slice(0, action.payload.from)
+             let b = updatedPlayers.slice(action.payload.from)
+             updatedPlayers = [...a, traderObj, ...b]
+ 
+             // update players with tradee
+             updatedPlayers = updatedPlayers.filter((_, index) => index !== action.payload.to)
+             let x = updatedPlayers.slice(0, action.payload.to)
+             let y = updatedPlayers.slice(action.payload.to)
+             updatedPlayers = [...x, tradeeObj, ...y]
+ 
+             state.players = updatedPlayers
+
+
+        },
+        rejectTrade(state, action: PayloadAction<{player: number, trader: number}>) {
+            let updatedPlayers = [...state.players]
+
+            let playerObj = updatedPlayers[action.payload.player]
+            let traderObj = updatedPlayers[action.payload.trader]
+
+            // TRADER SENDS
+            // remove trade from trader
+            traderObj.trades = traderObj.trades.filter(trade => !((trade.from === action.payload.trader) && (trade.to === action.payload.player)))
+            // remove trade from player
+            playerObj.trades = traderObj.trades.filter(trade => !((trade.from === action.payload.trader) && (trade.to === action.payload.player)))
+            
+
+            // update players with trader
+            updatedPlayers = updatedPlayers.filter((_, index) => index !== action.payload.trader)
+            let a = updatedPlayers.slice(0, action.payload.trader)
+            let b = updatedPlayers.slice(action.payload.trader)
+            updatedPlayers = [...a, traderObj, ...b]
+
+            // update players with player
+            updatedPlayers = updatedPlayers.filter((_, index) => index !== action.payload.player)
+            let x = updatedPlayers.slice(0, action.payload.player)
+            let y = updatedPlayers.slice(action.payload.player)
+            updatedPlayers = [...x, playerObj, ...y]
+
+            state.players = updatedPlayers
+
+        },
+        bankrupt(state, action: PayloadAction<{player: number, bankrupter: number}>) {
+                let updatedPlayers = [...state.players]
+                let updatedLands = [...state.lands]
+
+                let playerObj = updatedPlayers[action.payload.player]
+                
+
+                let isByPlayer = action.payload.bankrupter < updatedPlayers.length
+
+                if (isByPlayer) {
+                    // bankrupted by player
+                    let bankrupterObj = updatedPlayers[action.payload.bankrupter]
+                    bankrupterObj.cash += playerObj.cash
+                    playerObj.cash = 0
+                    bankrupterObj.lands = [...bankrupterObj.lands, ...playerObj.lands]
+                    playerObj.lands = []
+                    
+                    updatedLands = updatedLands.map(land => {
+                        return {
+                            ...land,
+                            owner: bankrupterObj.address
+                        }
+                    })
+
+                    updatedPlayers = updatedPlayers.filter((_, index) => index !== action.payload.player)
+                    let x = updatedPlayers.slice(0, action.payload.player)
+                    let y = updatedPlayers.slice(action.payload.player)
+                    updatedPlayers = [...x, playerObj, ...y]
+
+                    updatedPlayers = updatedPlayers.filter((_, index) => index !== action.payload.bankrupter)
+                    let a = updatedPlayers.slice(0, action.payload.player)
+                    let b = updatedPlayers.slice(action.payload.player)
+                    updatedPlayers = [...a, bankrupterObj, ...b]
+
+                } else {
+                    // bankrupted by bank
+                    state.bankCash += playerObj.cash
+                    playerObj.cash = 0
+                    state.bankLands = [...state.bankLands, ...playerObj.lands]
+                    playerObj.lands = []
+
+                    updatedLands = updatedLands.map(land => {
+                        return {
+                            ...land,
+                            owner: ""
+                        }
+                    })
+
+                    updatedPlayers = updatedPlayers.filter((_, index) => index !== action.payload.player)
+                    let x = updatedPlayers.slice(0, action.payload.player)
+                    let y = updatedPlayers.slice(action.payload.player)
+                    updatedPlayers = [...x, playerObj, ...y]
+
+                }
+
+                
+                state.players = updatedPlayers
+                state.lands = updatedLands
 
         }
     }
