@@ -696,4 +696,9 @@ export const LAND_SETS = [
         rentWithSetFactor: 2,
         sellable: false,
     },
+
+]
+
+export const CHARACTERS = [
+    "red", "blue", "green", "yellow", "pink", "brown", 
 ]

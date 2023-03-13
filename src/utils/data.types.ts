@@ -51,5 +51,6 @@ export interface PlayerInterface {
     pendingRent: boolean,
     trades: TradeInterface[],
     bankrupt: boolean,
+    isComputer: boolean
 }
 

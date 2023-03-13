@@ -1,4 +1,5 @@
 import { LandInterface } from "./data.types"
+import { CHARACTERS } from "./monopoly-data"
 
 export const calculateCellsOccupied = (_startPos: number[], _endPos: number[],   ) => {
     let rowSpan = _endPos[0] - _startPos[0] + 1
@@ -106,3 +107,43 @@ export const getHousesBuiltInSet = (setID: string, lands:LandInterface[]) => {
     return houses
 }
 
+
+export const getCharacterNotSelected = (selected: string[], characters: string[]) =>
+ {
+    
+   return shuffle(characters.filter(char => !CHARACTERS.includes(char)))[0]
+ }
+
+// helpers
+
+export function shuffle (array: any[]) {
+  let newArr = [...array]
+  let currentIndex = newArr.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [newArr[currentIndex], newArr[randomIndex]] = [
+      newArr[randomIndex], newArr[currentIndex]];
+  }
+
+  return newArr
+}
+
+
+export function formatTime(_stamp: number) {
+  var hours = Math.floor(_stamp / 60 / 60)
+
+  var minutes = Math.floor(_stamp / 60) - (hours * 60)
+  var seconds = Math.floor(_stamp % 60)
+
+  var formatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+
+  return formatted
+
+}

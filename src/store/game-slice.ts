@@ -16,6 +16,7 @@ export interface GameState {
     bankLands: string[]
     bankHoldings: string[],
     turn: number,
+    playerHasWon: boolean
 }
 
 const initialState: GameState = {
@@ -30,6 +31,7 @@ const initialState: GameState = {
     bankLands: [],
     bankHoldings: [],
     turn: 0,
+    playerHasWon: false
 }
 
 const gameSlice = createSlice( {
@@ -46,6 +48,27 @@ const gameSlice = createSlice( {
             state.logs = action.payload.logs
             state.bankCash = action.payload.bankCash
             state.turn = action.payload.turn
+        },
+        setupGamePlay(state, action: PayloadAction<{
+            lands: LandInterface[],
+            gameStepSequence: string[],
+            landSets: LandSetInterface[],
+            startingCash: number,
+            bankCash: number,
+        }>) {
+            
+            state.lands = action.payload.lands
+            state.gameStepSequence = action.payload.gameStepSequence
+            state.landSets = action.payload.landSets
+            state.startingCash = action.payload.startingCash
+            state.bankCash = action.payload.bankCash
+        },
+        setupPlayers(state, action: PayloadAction<PlayerInterface[]>) {
+            state.players = action.payload
+        },
+        startGame(state) {
+            state.playing = true
+            state.turn = 0
         },
         togglePlaying(state) {
             state.playing = !state.playing
@@ -370,6 +393,7 @@ const gameSlice = createSlice( {
 
                 let isByPlayer = action.payload.bankrupter < updatedPlayers.length
 
+                playerObj.bankrupt = true
                 if (isByPlayer) {
                     // bankrupted by player
                     let bankrupterObj = updatedPlayers[action.payload.bankrupter]
@@ -402,6 +426,8 @@ const gameSlice = createSlice( {
                     state.bankLands = [...state.bankLands, ...playerObj.lands]
                     playerObj.lands = []
 
+                    
+
                     updatedLands = updatedLands.map(land => {
                         return {
                             ...land,
@@ -419,6 +445,16 @@ const gameSlice = createSlice( {
                 
                 state.players = updatedPlayers
                 state.lands = updatedLands
+
+                let playersLeft = updatedPlayers.length
+
+                updatedPlayers.forEach(player => {
+                    if (player.bankrupt === true) {
+                        playersLeft -= 1
+                    }
+                })
+
+                state.playerHasWon = true
 
         }
     }

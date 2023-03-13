@@ -1,3 +1,4 @@
+import React, {useState} from "react"
 import Plate from '@/components/Plate'
 import Head from 'next/head'
 import Button from "@mui/material/Button"
@@ -6,11 +7,14 @@ import { useDispatch } from 'react-redux'
 import { gameActions } from '@/store/game-slice'
 import { PLAYERS_DUM } from '@/utils/dummy-data'
 import { LANDS, LAND_SETS } from '@/utils/monopoly-data'
-import { useRouter } from 'next/router'
+
+import PlayerSelection from '@/components/PlayerSelection'
+import EnterGame from "@/components/EnterGame"
 
 export default function Home() {
-  const router = useRouter()
   const dispatch = useDispatch();
+  const [gameIsSet, setGameIsSet] = useState(false)
+  const [showEnterGame, setShowEnterGame] = useState(false)
 
   const usedLands = LANDS.map((land, index) => {
     return {
@@ -38,42 +42,22 @@ export default function Home() {
 
   let gameStepSequence = [...usedLands.map((_, index) => `land-${index + 1}`)]
 
-  let modifiedPlayers = PLAYERS_DUM.map((player, index) => {
-    return {
-      name: player.name,
-      address: player.address,
-      lands: player.lands,
-      character: player.character,
-      cash: 15000,
-      turn: player.turn,
-      trades: [],
-      position: gameStepSequence[0],
-      pendingRent: false,
-      bankrupt: false,
-    }
-  })
+  
 
-  const handleStartGame = () => {
-    dispatch(gameActions.setup({
-      playing: true,
+  const handleSetupGame = () => {
+    dispatch(gameActions.setupGamePlay({
       lands: usedLands,
-    gameStepSequence,
-    players: modifiedPlayers,
-    startingCash: 15000,
-      logs: [
-        {
-          timestamp: new Date().getTime(),
-          message: "Game Started",
-        }
-      ],
+      gameStepSequence,
+      startingCash: 15000,
       bankCash: 100000,
-      bankLands: [], 
-      bankHoldings: [],
-      turn: 0,
       landSets: LAND_SETS
     }))
 
-    router.push("/game")
+    setGameIsSet(true)
+  }
+
+  const handlePlayerSelectionDone = () => {
+    setShowEnterGame(true)
   }
   return (
     <>
@@ -85,7 +69,14 @@ export default function Home() {
       </Head>
       <main >
         <Box>
-          <Button onClick={handleStartGame}>PLAY</Button>
+          {!gameIsSet && <Box>
+            <Button onClick={handleSetupGame}>Go</Button>
+          </Box>}
+          
+          {(gameIsSet && !showEnterGame)&& <PlayerSelection onDone={handlePlayerSelectionDone} />}
+
+          {showEnterGame && <EnterGame />}
+
         </Box>
       </main>
     </>
