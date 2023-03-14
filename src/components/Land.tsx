@@ -8,18 +8,9 @@ import { calculateCellPos, getCellSpans } from "@/utils/functions";
 import LandDetail from "./LandDetail";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import GamePopup from "./GamePopup";
 
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
+
 
 interface LandProps {
   id: string,
@@ -63,10 +54,12 @@ const Land = ({
   divisions
 }: LandProps) => {
 
+  const settings = useSelector((state: RootState) => state.settings)
   const game = useSelector((state: RootState) => state.game)
    const [openDetails, setOpenDetails] = React.useState(false);
 
   const {players} = game
+  const {token} = settings
 
   let owningPlayer = players.filter(player => player.address === owner)[0]
 
@@ -83,16 +76,20 @@ const Land = ({
 
 
   return <>
-    <Card onClick={handleOpenDetails} sx={{
+    <Card elevation={0} onClick={handleOpenDetails} sx={{
     position: "absolute",
     left: `${xCord - (100 / divisions)}%`,
     top: `${yCord - (100 / divisions)}%`,
     width: `${((100 / divisions) * columnSpan)}%`,
     height: `${((100 / divisions) * rowSpan)}%`,
-    bgcolor: "rgba(0,0,0,0.6)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    bgcolor: "primary.main",
     cursor: "pointer",
     border: "2px solid",
-    borderColor: !!owningPlayer ? owningPlayer.character : "transparent",
+    borderRadius: 2,
+    borderColor: !!owningPlayer ? owningPlayer.character : "primary.dark",
   }}>
   <Box sx={{
     bgcolor: color,
@@ -104,9 +101,11 @@ const Land = ({
   </Box>
 
   <Typography sx={{
-    fontSize: `calc(100% / ${divisions / 10})`,
+    fontSize: `calc(100% / ${divisions / 15})`,
     textAlign: "center",
-    textTransform: "uppercase"
+    textTransform: "uppercase",
+    color: "primary.contrastText",
+    p: "2px"
   }}>
     {name}
   </Typography>
@@ -115,7 +114,7 @@ const Land = ({
     position: "relative",
     width: `40%`,
     height: "40%",
-    outline: "1px solid red",
+    outline: "1px solid white",
 
     "& img": {
       objectFit: "contain",
@@ -128,19 +127,19 @@ const Land = ({
   
   </Box>
 
-  <Box sx={{
-
+  <Typography sx={{
+    fontSize: `calc(100% / ${divisions / 15})`,
+    textAlign: "center",
+    textTransform: "uppercase",
+    color: "primary.contrastText",
+    p: "2px"
   }}>
-  
-  </Box>
+  {token.symbol}{price}
+  </Typography>
   </Card>
-    <Modal
+    <GamePopup
         open={openDetails}
-        onClose={handleCloseDetails}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
           <LandDetail 
             id={id}
             type={type}
@@ -158,8 +157,7 @@ const Land = ({
             owner={owner}
             houses={houses}
           />
-        </Box>
-      </Modal>
+      </GamePopup>
   </>;
 };
 

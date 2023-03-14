@@ -91,6 +91,33 @@ export const groupPlayerLandsInSets = (landIDs: string[], allLands: LandInterfac
 
 
 }
+
+export const groupAllLandsInSets = (allLands: LandInterface[]) => {
+    
+    let setsFromLands = allLands.map(land => land.setID)
+    let sets = setsFromLands.filter((set, index) => setsFromLands.indexOf(set) === index )
+
+    
+    let landsGrouped : LandGroupType[] = []
+
+    for (let i = 0; i < sets.length; i++) {
+        if (sets[i] !== "") {
+            let arr:LandInterface[] = []
+        for (let land of allLands) {
+            if (land.setID === sets[i]) {
+                arr.push(land)
+            }
+        }
+        landsGrouped.push(arr)
+        }
+        
+    }
+
+    return landsGrouped
+
+
+}
+
 export const getLandsWithSameSetAs = (land:LandInterface, lands: LandInterface[])  => {
     return lands.filter(_land => _land.setID === land.setID )
 }

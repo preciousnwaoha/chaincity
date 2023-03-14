@@ -11,26 +11,43 @@ import PlayerLandsInSets from "./PlayerLandsInSets"
 const Players = () => {
     const game = useSelector((state: RootState) => state.game)
     const settings = useSelector((state: RootState) => state.settings)
+    const [showPlayerLands, setShowPlayerLands] = React.useState<number | null>(null)
 
     const {players, turn, lands} = game
+
 
     const landsGroupedInSets = groupPlayerLandsInSets(players[turn].lands, lands)
 
     const {token} = settings
     let tokenSymbol = token ? token.symbol : "--"
 
+    const toggleShowPlayerLands = (index: number) => {
+        
+        setShowPlayerLands(prev => {
+            if (index === prev) {
+                return null
+            }
+            return index
+        })
+    }
 
 
-    return <Paper>
+
+    return <Paper elevation={0} sx={{
+        mt: 2,
+        borderRadius: "12px",
+    }}>
         {players.map((player, index) => {
             return <Box key={`p${index}`}>
                 <Box sx={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    p: 1,
+                    p: 2,
+                    cursor: "pointer",
                     bgcolor: ( player.turn === turn) ?  "rgba(0,0,0,0.1)" : "",
-                }}>
+                
+                }} onClick={() => toggleShowPlayerLands(index)}>
                     <Box sx={{
                         display: "flex",
                         alignItems: "center",
@@ -43,12 +60,16 @@ const Players = () => {
                         }}>
                         </Box>
                         <Typography variant="body1" sx={{
-                            ml: 2
+                            ml: 2,
+                            color: "white"
                         }}>{player.name}</Typography>
                     </Box>
-                    <Typography variant="body1">{tokenSymbol}{player.cash}</Typography>
+                    <Typography variant="body1" sx={{
+                        color: "white",
+                    }}>{tokenSymbol}{player.cash}</Typography>
                 </Box>
-                {( player.turn === turn) && <PlayerLandsInSets groupedLands={landsGroupedInSets} />}
+                {(( player.turn === turn) || (showPlayerLands === index ) )&& <PlayerLandsInSets player={index}
+                />}
             </Box>
         })}
     </Paper>

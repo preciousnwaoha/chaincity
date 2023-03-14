@@ -88,12 +88,12 @@ const Plate = ({divisions} : PlateProps) => {
 
   return (
     <Box sx={{
-      outline: "1px solid red",
       height: "100%",
       width: "100%",
       boxSizing: "border-box",
       display: "inline-block",
-      position: "relative"
+      position: "relative",
+      bgcolor: "background.paper"
 
     }}>
         {cellsArray.map((cell, index) => {
@@ -110,18 +110,7 @@ const Plate = ({divisions} : PlateProps) => {
           </Box>
         })}
 
-        <Box sx={{
-          width: `70%`,
-          height: `70%`,
-          position: "absolute",
-          top: `${50}%`,
-          left: `${50}%`,
-          transform: "translate(-50%, -50%)",
-          bgcolor: "rgba(0, 255, 0, 0.2,)",
-          outline: "1px solid red",
-        }}>
-
-        </Box>
+        
         {lands.map((land, index) => {
           return <Land 
             key={index}

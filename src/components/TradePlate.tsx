@@ -40,7 +40,7 @@ const TradePlate = ({ trader, onGetTradeData} : TradePlateInterface) => {
 
     const landsGroupedInSets = groupPlayerLandsInSets(players[trader].lands, lands)
     return <Box>
-        <TradeLandsInSet groupedLands={landsGroupedInSets} onUpdateSelectedLands={handleUpdateTraderLands}/>
+        <TradeLandsInSet player={trader} onUpdateSelectedLands={handleUpdateTraderLands}/>
         <Typography onClick={handleUpdateTraderCash}>{cash}</Typography>
     </Box>
 }

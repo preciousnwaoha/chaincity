@@ -26,7 +26,7 @@ export default function Game() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main >
-        {!playing ? <Button onClick={() => router.push("/")}>BACK TO HOME</Button> : <Grid container sx={{
+        {!playing ? <Button onClick={() => router.push("/")}>BACK TO HOME</Button> : <Grid container spacing={2} sx={{
           width: "100vw",
           height: "100vh",
         }}>
@@ -42,7 +42,6 @@ export default function Game() {
               <Box sx={{
                 width: "100%",
                 height: "100%",
-                outline: "1px solid blue"
               }}>
                 <Players />
                 <Bank />

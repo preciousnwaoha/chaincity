@@ -10,18 +10,8 @@ import { getLandFromID } from '@/utils/functions'
 import Deed from './Deed'
 import { gameActions } from '@/store/game-slice'
 import { LandInterface } from '@/utils/data.types'
+import GamePopup from './GamePopup'
 
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
 
 interface PayingRentProps {
     open: boolean,
@@ -35,12 +25,7 @@ const PayingRent = ({open, land, player} : PayingRentProps) => {
   
 
   return (
-        <Modal
-        open={open}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
+      <GamePopup open={open}>
         <Paper>
           <Box>
             Paying Rent
@@ -48,8 +33,7 @@ const PayingRent = ({open, land, player} : PayingRentProps) => {
         
         
     </Paper>
-        </Box>
-      </Modal>
+      </GamePopup>
   )
 }
 

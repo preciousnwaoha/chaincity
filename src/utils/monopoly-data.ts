@@ -19,7 +19,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-1",
         color: "purple",
         name: "Happy",
         rent: 15,
@@ -53,7 +53,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-1",
         color: "purple",
         name: "Happy",
         rent: 15,
@@ -87,7 +87,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-22",
         color: "white",
         name: "Happy",
         rent: 15,
@@ -104,7 +104,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-2",
         color: "lightblue",
         name: "Happy",
         rent: 15,
@@ -121,7 +121,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-2",
         color: "lightblue",
         name: "Happy",
         rent: 15,
@@ -155,7 +155,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-2",
         color: "lightblue",
         name: "Happy",
         rent: 15,
@@ -189,8 +189,8 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
-        color: "red",
+        setID: "set-3",
+        color: "#4a0000",
         name: "Happy",
         rent: 15,
         mortgageFactor: 0.5,
@@ -206,7 +206,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-23",
         color: "white",
         name: "Happy",
         rent: 15,
@@ -223,8 +223,8 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
-        color: "red",
+        setID: "set-3",
+        color: "#4a0000",
         name: "Happy",
         rent: 15,
         mortgageFactor: 0.5,
@@ -240,8 +240,8 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
-        color: "red",
+        setID: "set-3",
+        color: "#4a0000",
         name: "Happy",
         rent: 15,
         mortgageFactor: 0.5,
@@ -257,7 +257,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-22",
         color: "white",
         name: "Happy",
         rent: 15,
@@ -274,7 +274,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-4",
         color: "orange",
         name: "Happy",
         rent: 15,
@@ -308,7 +308,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-4",
         color: "orange",
         name: "Happy",
         rent: 15,
@@ -325,7 +325,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-4",
         color: "orange",
         name: "Happy",
         rent: 15,
@@ -359,7 +359,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-5",
         color: "red",
         name: "Happy",
         rent: 15,
@@ -393,7 +393,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-5",
         color: "red",
         name: "Happy",
         rent: 15,
@@ -410,7 +410,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-5",
         color: "red",
         name: "Happy",
         rent: 15,
@@ -427,7 +427,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-22",
         color: "white",
         name: "Happy",
         rent: 15,
@@ -444,7 +444,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-6",
         color: "yellow",
         name: "Happy",
         rent: 15,
@@ -461,7 +461,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-6",
         color: "yellow",
         name: "Happy",
         rent: 15,
@@ -478,8 +478,8 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
-        color: "white",
+        setID: "set-23",
+        color: "lightgreen",
         name: "Happy",
         rent: 15,
         mortgageFactor: 0.5,
@@ -495,7 +495,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-6",
         color: "yellow",
         name: "Happy",
         rent: 15,
@@ -529,7 +529,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-7",
         color: "green",
         name: "Happy",
         rent: 15,
@@ -546,7 +546,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-7",
         color: "green",
         name: "Happy",
         rent: 15,
@@ -580,7 +580,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-7",
         color: "green",
         name: "Happy",
         rent: 15,
@@ -597,7 +597,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-22",
         color: "white",
         name: "Happy",
         rent: 15,
@@ -631,7 +631,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-8",
         color: "blue",
         name: "Happy",
         rent: 15,
@@ -665,7 +665,7 @@ export const LANDS = [
     {
         id: "c1",
         type: "deed", // deed, aux,
-        setID: "",
+        setID: "set-8",
         color: "blue",
         name: "Happy",
         rent: 15,
@@ -685,14 +685,56 @@ export const LAND_SETS = [
     {
         id: "set-1",
         name: "",
-        color: "red",
+        color: "purple",
         rentWithSetFactor: 0,
         sellable: false,
     },
     {
         id: "set-2",
         name: "Precious Avenue",
+        color: "lightblue",
+        rentWithSetFactor: 2,
+        sellable: false,
+    },
+    {
+        id: "set-3",
+        name: "Precious Avenue",
+        color: "#4a0000",
+        rentWithSetFactor: 2,
+        sellable: false,
+    },
+    {
+        id: "set-4",
+        name: "Precious Avenue",
+        color: "orange",
+        rentWithSetFactor: 2,
+        sellable: false,
+    },
+    {
+        id: "set-5",
+        name: "Precious Avenue",
         color: "red",
+        rentWithSetFactor: 2,
+        sellable: false,
+    },
+    {
+        id: "set-6",
+        name: "Precious Avenue",
+        color: "yellow",
+        rentWithSetFactor: 2,
+        sellable: false,
+    },
+    {
+        id: "set-7",
+        name: "Precious Avenue",
+        color: "green",
+        rentWithSetFactor: 2,
+        sellable: false,
+    },
+    {
+        id: "set-8",
+        name: "Precious Avenue",
+        color: "blue",
         rentWithSetFactor: 2,
         sellable: false,
     },

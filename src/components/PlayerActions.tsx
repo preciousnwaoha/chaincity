@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import React, { useEffect } from 'react'
 import Paper from "@mui/material/Paper"
+import Grid from "@mui/material/Grid"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import Modal from '@mui/material/Modal';
@@ -11,18 +12,7 @@ import Deed from './Deed'
 import { gameActions } from '@/store/game-slice'
 import PayingRent from './PayingRent'
 import Trade from './Trade'
-
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
+import GamePopup from './GamePopup'
 
 interface PlayerActionsProps {
     open: boolean,
@@ -146,13 +136,12 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     <Trade open={trading} onClose={handleCloseTrading} />
     </>
     
-  :  <Modal
+  :  <GamePopup
   open={open}
-  aria-labelledby="modal-modal-title"
-  aria-describedby="modal-modal-description"
+  
 >
-  <Box sx={style}>
-  <Paper>
+  
+  <Paper >
     <Box>
     <Deed
       id={land.id}
@@ -171,24 +160,51 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
       owner={land.owner}
       houses={land.houses}
     />
-    {!hasOwner && <Button onClick={handleBuy}>BUY</Button>}
+    <Box sx ={{
+      p: 2,
+      display: "flex",
+      justifyContent: "center",
+      // flexWrap: "wrap"
+    }}>
+    {!hasOwner && <Button sx={{
+      m: 1
+    }} variant="contained" onClick={handleBuy}>BUY</Button>}
     {isOwner &&<>
-      <Button onClick={handleBuild} disabled={playerHasCashToBuild}>BUILD</Button>
-      <Button onClick={handleSell} >SELL</Button>
-      <Button onClick={handleMortgage} disabled={!playerCanMortgage}>MORTGAGE</Button>
-      <Button onClick={handleUnmortgage} disabled={!playerCanUnmortgage}>UNMORTGAGE</Button>
+      <Button sx={{
+        m: 1
+      }} variant="contained" onClick={handleBuild} disabled={playerHasCashToBuild}>BUILD</Button>
+      <Button sx={{
+        m: 1
+      }} variant="contained" onClick={handleSell} >SELL</Button>
+      <Button sx={{
+        m: 1
+      }} variant="contained" onClick={handleMortgage} disabled={!playerCanMortgage}>MORTGAGE</Button>
+      <Button sx={{
+        m: 1
+      }} variant="contained" onClick={handleUnmortgage} disabled={!playerCanUnmortgage}>UNMORTGAGE</Button>
 
     </>}
     </Box>
-    <Box>
-      <Button onClick={handleFinish}>FINISH</Button>
-      <Button onClick={handleOpenTrading}>TRADE</Button>
+    
     </Box>
+    <Grid container item sx ={{
+      display: "flex",
+      justifyContent: "center",
+    }}>
+      <Button sx={{
+        m: 1
+      }} variant="contained" onClick={handleFinish}>FINISH</Button>
+      <Button sx={{
+        m: 1
+      }} variant="contained" onClick={handleOpenTrading}>TRADE</Button>
+
+      
+      
+    </Grid>
   
   
 </Paper>
-  </Box>
-</Modal>}
+</GamePopup>}
     </>
        
   )

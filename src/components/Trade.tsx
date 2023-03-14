@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/store"
 import { gameActions } from "@/store/game-slice"
 import TradePlate from "./TradePlate"
+import GamePopup from "./GamePopup"
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -113,17 +114,18 @@ const Trade = ({open, onClose}: TradeInterface) => {
     return (
       <>
       {pendingTrades ?
-       <Modal
+       <GamePopup
        open={open}
-       aria-labelledby="modal-modal-title"
-       aria-describedby="modal-modal-description"
+       
      >
-       <Box sx={style}>
        <Paper>
-         <Box>
            
-           <Typography>OFFER</Typography>
-         </Box>
+         <Typography sx={{
+              textAlign: "center",
+              fontSize: "1.5rem",
+              color: "white",
+              py: 2,
+            }}>OFFER</Typography>
          <Grid container spacing={1}>
            <Grid item xs={6}> 
 
@@ -133,27 +135,44 @@ const Trade = ({open, onClose}: TradeInterface) => {
            <TradePlate trader={offers[0].from} onGetTradeData={handleTraderData} />
            </Grid>
          </Grid>
+         <Grid container item sx={{
+          justifyContent: "center"
+         }}>
+          <Button onClick={() => {handleAcceptTrade(offers[0].from)}} variant="contained" sx={{
+            my: 1
+          }}>ACCEPT OFFER</Button>
+          <Button onClick={() => {handleRejectTrade(offers[0].from)}} variant="contained" sx={{
+            my: 1
+          }}>REJECT OFFER</Button>
+         </Grid>
          
-         <Button onClick={() => {handleAcceptTrade(offers[0].from)}}>ACCEPT OFFER</Button>
-          <Button onClick={() => {handleRejectTrade(offers[0].from)}}>REJECT OFFER</Button>
    </Paper>
-       </Box>
-     </Modal>
+     </GamePopup>
       :
-      <Modal
+      <GamePopup
         open={open}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
-        <Paper>
+        <Paper sx={{
+          p: 2
+        }}> 
           <Box>
             
-            <Typography>TRADE</Typography>
+            <Typography sx={{
+              textAlign: "center",
+              fontSize: "1.5rem",
+              color: "white",
+              mb: 2,
+            }}>TRADE</Typography>
           </Box>
           <Grid container spacing={1}>
-            <Grid item xs={6}>
+            <Grid item xs={6} sx={{
+              height: "100%",
+            }}>
               <Box sx={{
+                py: 2,
+                height: "100%"
+              }}>
+                <Box sx={{
             display: "flex",
           }}>
                 <Box  sx={{
@@ -166,9 +185,14 @@ const Trade = ({open, onClose}: TradeInterface) => {
                 </Box>
               </Box>
               <TradePlate trader={turn} onGetTradeData={handleTraderData} />
+              </Box>
+              
             </Grid>
             <Grid item xs={6}>
-            <Box sx={{
+              <Box sx={{
+                p: 2
+              }}>
+              <Box sx={{
             display: "flex",
           }}>
           {players.map((player , index)=> {
@@ -182,12 +206,14 @@ const Trade = ({open, onClose}: TradeInterface) => {
                 height: "30px",
                 mr: 2,
                 cursor: "pointer",
-                outline: (index === tradee) ? "1px solid black": "",
+                outline: (index === tradee) ? "2px solid": "none",  
+                outlineColor: "secondary.light",  
                 outlineOffset: "2px",
 
                 "&: hover": {
-                  outline: "1px solid black",
-                outlineOffset: "2px",
+                  outline: "1px solid",
+                  outlineColor: "secondary.light",                
+                  outlineOffset: "2px",
                 }
             }} onClick={() => {handleSelectTradee(index)}}>
 
@@ -196,15 +222,20 @@ const Trade = ({open, onClose}: TradeInterface) => {
         })}
           </Box>
           {(tradee !== undefined) && <TradePlate trader={tradee!} onGetTradeData={handleTradeeData} />}
+              </Box>
+            
             </Grid>
           </Grid>
           
         
-        <Button onClick={handlePlaceTrade} disabled={!canPlaceTrade}>PLACE TRADE</Button>
-        <Button onClick={handleCancelTrade}>CANCEL</Button>
+        <Button onClick={handlePlaceTrade} variant="contained"  disabled={!canPlaceTrade} sx={{
+          m: 1
+        }}>PLACE TRADE</Button>
+        <Button onClick={handleCancelTrade} variant="contained" sx={{
+          m: 1
+        }}>CANCEL</Button>
     </Paper>
-        </Box>
-      </Modal>}
+      </GamePopup>}
       </>
         
   )

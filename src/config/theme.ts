@@ -20,16 +20,16 @@ let theme = createTheme({
         white: "#ffffff",
     },
     primary: {
-      dark: "#43c000",
-      main: "#602F86",
-      light: "#89e219",
+      dark: "#2e1042",
+      main: "#462964",
+      light: "#543977",
       contrastText: "#ffffff"
     },
     secondary: {
-      dark: "#f49000",
-      main: "#ffc200",
-      light: "#ffde00",
-      contrastText: "#4b4b4b",
+      dark: "#244210",
+      main: "#426f25",
+      light: "#578d34",
+      contrastText: "#ffffff",
     },
     error: {
       main: "#ff4b4b",
@@ -44,7 +44,7 @@ let theme = createTheme({
       main: "#1cb0f6",
     },
     background: {
-      paper: "#150F1D",
+      paper: "#2e1042",
       default: "#150F1D",
     },
     text: {
@@ -57,33 +57,18 @@ let theme = createTheme({
 
 theme = createTheme(theme, {
     palette: {
+      primary: {
+        fade: "#c6c1d6",
+      },
+      secondary: {
+        fade: "#e8f0e4",
+      },
         color1: {
             dark: "#1cb0f6",
             main: "#1cb0f6",
             light: "#1cb0f6",
             fade: "#1cb0f6",
         },
-        color2: {
-            dark: "#ff4b4b",
-            main: "#ff4b4b",
-            light: "#ff4b4b",
-            fade: "#ff4b4b",
-        },
-        color3: {
-            dark: "#ce82ff",
-            main: "#ce82ff",
-            light: "#ce82ff",
-            fade: "#ce82ff",
-        },
-        color4: {
-            dark: "#2b70c9",
-            main: "#2b70c9",
-            light: "#2b70c9",
-            fade: "#2b70c9",
-        },
-        grey: {
-            // gray1: "#4b4b4b",
-        }
     },
     typography: {
         fontFamily: font2,
@@ -171,19 +156,25 @@ theme = createTheme(theme, {
       styleOverrides: {
         root: {
             borderRadius: "12px",
-            fontSize: "1rem",
+            fontSize: "1.25rem",
             fontWeight: 700,
             my: 1,
+            p: 2,
+            
         },
         text: {
           color: "#1cb0f6"
         },
         contained: {
-            background: "#1cb0f6",
+            background: theme.palette.secondary.main,
             [theme.breakpoints.down('sm')]: {
                 fontSize: "1rem",
             },
             boxShadow: "none",
+            borderBottom: "3px solid" + theme.palette.secondary.dark,
+            "&:hover": {
+              bgcolor: theme.palette.secondary.main
+            }
         },
         outlined: {
             border: `2px solid #e5e5e5`,
@@ -208,6 +199,15 @@ theme = createTheme(theme, {
         },
       },
     },
+    MuiPaper: {
+      styleOverrrides: {
+        root: {
+          borderRadius: "12px",
+        },
+      },
+    },
+
+    
   },
 });
 

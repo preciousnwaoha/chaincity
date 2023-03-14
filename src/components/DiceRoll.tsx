@@ -6,6 +6,7 @@ import Modal from '@mui/material/Modal';
 import Box from "@mui/material/Box";
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import GamePopup from './GamePopup';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -61,20 +62,41 @@ const DiceRoll = ({onRollDice}: DiceRollProps) => {
     }, [turn])
 
   return (
-    <Modal
-        open={open}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-        <Paper>
-          <Typography>{players[turn].name}</Typography>
-        {rolling && <Typography >Rolling...</Typography> }
+      <GamePopup open={open}>
+    <Box sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    }}>
+          <Typography sx={{
+            textAlign: "center",
+            fontSize: "1.5rem",
+            color: "primary.contrastText",
+            my: 2,
+          }}>{players[turn].name}</Typography>
+          <Box sx={{
+            width: "40px",
+            height: "40px",
+            bgcolor: players[turn].character,
+            borderRadius: "50%"
+          }}>
+
+
+          </Box>
+        {rolling && <Typography sx={{
+          extAlign: "center",
+          fontSize: "1.5rem",
+          color: "primary.contrastText",
+        mt: 2,
+
+        }} >Rolling...</Typography> }
          {(!rolling && !!dices) && <Typography >{dices[0]} : {dices[1]}</Typography>}
-       {!rolling && <Button onClick={handleDiceRoll}>ROLL</Button>}
-    </Paper>
-        </Box>
-      </Modal>
+       {!rolling && <Button variant="contained" onClick={handleDiceRoll} sx={{
+        mt: 2,
+       }}>ROLL DICE</Button>}
+    </Box>
+      </GamePopup>
+        
     
   )
 }

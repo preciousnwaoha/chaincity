@@ -1,5 +1,7 @@
 import { LandInterface, LandSetInterface, LogInterface, PlayerInterface, TradeInterface } from "@/utils/data.types";
+import { PLAYERS_DUM } from "@/utils/dummy-data";
 import { getLandFromID } from "@/utils/functions";
+import { LANDS, LAND_SETS } from "@/utils/monopoly-data";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
@@ -19,15 +21,60 @@ export interface GameState {
     playerHasWon: boolean
 }
 
+const usedLands = LANDS.map((land, index) => {
+    return {
+      id: `land-${index + 1}`,
+      type: land.type,
+    setID: land.setID,
+    color: land.color,
+    name: land.name,
+    rent: land.rent,
+    mortgageFactor: land.mortgageFactor,
+    unmortgageFactor: land.unmortgageFactor,
+    mortgaged: false,
+    price: land.price,
+    maxHouses: land.maxHouses,
+    maxHotels: land.maxHotels,
+    houseRentFactor: land.houseRentFactor,
+    image: land.image,
+    startPos: land.startPos,
+    endPos: land.endPos,
+    owner: "",
+    houses: 0,
+    }
+  
+  })
+
+  let gameStepSequence = [...usedLands.map((_, index) => `land-${index + 1}`)]
+
+  
+
 const initialState: GameState = {
-    playing: false,
-    lands: [],
-    landSets: [],
-    gameStepSequence: [],
-    players: [],
-    startingCash: 0,
-    logs: [],
-    bankCash: 0, 
+    playing: true,
+    lands: usedLands,
+    gameStepSequence: gameStepSequence,
+    players: PLAYERS_DUM.map((player, index) => {
+        return {
+            name: player.name,
+        address: `p-${index}`,
+        lands: [],
+        character: "blue",
+        cash: 15000,
+        turn: index,
+        trades: [],
+        position: gameStepSequence[0],
+        pendingRent: false,
+        bankrupt: false,
+        isComputer: index === 0 ? true : false
+        }
+    }),
+    logs: [{
+        message: "Game started",
+        timestamp: new Date().getTime()
+    }],
+    startingCash: 15000,
+    bankCash: 100000,
+    landSets: LAND_SETS,
     bankLands: [],
     bankHoldings: [],
     turn: 0,
@@ -69,6 +116,10 @@ const gameSlice = createSlice( {
         startGame(state) {
             state.playing = true
             state.turn = 0
+            state.logs = [...state.logs, {
+                message: "Game Started",
+                timestamp: new Date().getTime()
+            }]
         },
         togglePlaying(state) {
             state.playing = !state.playing
@@ -146,6 +197,10 @@ const gameSlice = createSlice( {
             })
 
             state.lands = updatedLands
+            state.logs = [...state.logs, {
+                message: `${playerObj.name} bought ${land.name}`,
+                timestamp: new Date().getTime()
+            }]
 
         },
         payRent(state, action: PayloadAction<{player: number, landID: string}>) {
@@ -183,10 +238,15 @@ const gameSlice = createSlice( {
                 let x = updatedPlayers.slice(0, ownerPlayer)
                 let y = updatedPlayers.slice(ownerPlayer)
                 updatedPlayers = [...x, ownerPlayerObj, ...y]
+                state.logs = [...state.logs, {
+                    message: `${playerObj.name} paid ${land.rent} rent to ${ownerPlayerObj.name}`,
+                    timestamp: new Date().getTime()
+                }]
             }
         
 
             state.players = updatedPlayers;
+            
         },
         mortgage(state, action: PayloadAction<{player: number, landID: string}>) {
             let updatedPlayers = [...state.players]
@@ -220,6 +280,10 @@ const gameSlice = createSlice( {
             let b = updatedPlayers.slice(action.payload.player)
             updatedPlayers = [...a, playerObj, ...b]
             state.players = updatedPlayers
+            state.logs = [...state.logs, {
+                message: `${playerObj.name} mortgaged ${land.name} for ${land.price * land.mortgageFactor}`,
+                timestamp: new Date().getTime()
+            }]
         },
         unmortgage(state, action: PayloadAction<{player: number, landID: string}>) {
             let updatedPlayers = [...state.players]
@@ -254,6 +318,11 @@ const gameSlice = createSlice( {
             let b = updatedPlayers.slice(action.payload.player)
             updatedPlayers = [...a, playerObj, ...b]
             state.players = updatedPlayers
+
+            state.logs = [...state.logs, {
+                message: `${playerObj.name} unmortgaged ${land.name} for ${land.price * land.unmortgageFactor}`,
+                timestamp: new Date().getTime()
+            }]
         },
         acceptTrade(state, action: PayloadAction<{player: number, trader: number}>) {
             let updatedLands = [...state.lands]
@@ -328,7 +397,10 @@ const gameSlice = createSlice( {
             })
             state.lands = updatedLands
 
-
+            state.logs = [...state.logs, {
+                message: `${playerObj.name} accepted trade from ${traderObj.name}`,
+                timestamp: new Date().getTime()
+            }]
 
         },
         placeTrade(state, action: PayloadAction<TradeInterface>) {
@@ -353,7 +425,10 @@ const gameSlice = createSlice( {
              updatedPlayers = [...x, tradeeObj, ...y]
  
              state.players = updatedPlayers
-
+             state.logs = [...state.logs, {
+                message: `${traderObj.name} offerered ${tradeeObj.name} a trade`,
+                timestamp: new Date().getTime()
+            }]
 
         },
         rejectTrade(state, action: PayloadAction<{player: number, trader: number}>) {
@@ -382,6 +457,11 @@ const gameSlice = createSlice( {
             updatedPlayers = [...x, playerObj, ...y]
 
             state.players = updatedPlayers
+
+            state.logs = [...state.logs, {
+                message: `${playerObj.name} rejected ${traderObj.name} trade`,
+                timestamp: new Date().getTime()
+            }]
 
         },
         bankrupt(state, action: PayloadAction<{player: number, bankrupter: number}>) {
@@ -445,6 +525,10 @@ const gameSlice = createSlice( {
                 
                 state.players = updatedPlayers
                 state.lands = updatedLands
+                state.logs = [...state.logs, {
+                    message: `${playerObj.name} declared bankruptcy`,
+                    timestamp: new Date().getTime()
+                }]
 
                 let playersLeft = updatedPlayers.length
 
