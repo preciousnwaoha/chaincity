@@ -19,7 +19,7 @@ import genericErc20Abi from '@/utils/artifacts/contracts/Chainlink.json'
 import artifact from '@/utils/artifacts/contracts/Chainlink.json'
 import { contractActions } from "@/store/contract-slice"
 const CONTRACT_ADDRESS = "0x6B77674E52b5e65363cF11e4839dFA80157207E6"
-const TOKEN_ADDRESS = "0xFA33A300fB246D4fb6CCAE507796d79639Ea28a0"
+const TOKEN_ADDRESS = "0x6B77674E52b5e65363cF11e4839dFA80157207E6"
 
 
 export default function Home() {

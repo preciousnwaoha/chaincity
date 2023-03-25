@@ -52,23 +52,6 @@ const SelectNet = ({onSelectedNet, onBack}: SelectNetInterface) => {
     const getSignerData = async () => {
         provider!.send("eth_requestAccounts", [])
         const signer = provider!.getSigner()
-        console.log("signer: ", signer)
-      
-        /* ------ get signer address ------ */
-        const address = await signer.getAddress()
-        console.log({address})
-         
-      
-            /* ------ get signer balance ------ */
-            getBalance(address, signer).then(balance => {
-             
-              console.log({balance})
-            }).catch(err => console.log(err.message))
-
-            
-        
-        
-        
         return signer
        }
 
@@ -79,12 +62,18 @@ const SelectNet = ({onSelectedNet, onBack}: SelectNetInterface) => {
         }
     
         /* ------ get signer ------ */
-    getSignerData().then(signer => {
-      console.log({signer})
-    })
+    const signer = await getSignerData()
+    console.log({signer})
 
+    /* ------ get signer address ------ */
+    const address = await signer.getAddress()
+    console.log({address})
+     
+  
+    /* ------ get signer balance ------ */
+    const balance = await getBalance(address, signer)
         
-        // dispatch(contractActions.stageAccount({currentAccount: address, accounts: [address], signer, tokenBalance: balance}))
+        dispatch(contractActions.stageAccount({currentAccount: address, accounts: [address], signer, tokenBalance: balance}))
      }
 
    
