@@ -41,5 +41,5 @@ This is a web2-web2 dapp
 Very much not complete, but were heading there.
 
 
-### This project was driven by the Web3Africa Hackathon
+This project was driven by the Web3Africa Hackathon
 
