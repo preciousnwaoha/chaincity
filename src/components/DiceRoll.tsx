@@ -26,12 +26,16 @@ interface DiceRollProps {
 
 const DiceRoll = ({onRollDice}: DiceRollProps) => {
     const game = useSelector((state : RootState) => state.game)
+    const contract = useSelector((state : RootState) => state.contract)
     const [open, setOpen] = React.useState(false);
     const [dices, setDices] = React.useState<undefined | number[]>(undefined)
     const [rolling, setRolling] = React.useState(false);
     // const [rolled, setRolled] = React.useState(false);
 
     const {turn, players} = game
+    const {currentAccount} = contract;
+    
+    const isClientTurn = players[turn].address === currentAccount
 
 
     const handleDiceRoll = () => {
@@ -104,9 +108,10 @@ const DiceRoll = ({onRollDice}: DiceRollProps) => {
           p: 2,
           color: "white",
          }}>{dices[0]} : {dices[1]}</Typography>}
-       {(!dicesOn && !rolling ) && <Button variant="contained" onClick={handleDiceRoll} sx={{
+       {(!dicesOn && !rolling && isClientTurn) && <Button variant="contained" onClick={handleDiceRoll} sx={{
         mt: 2,
-       }}>ROLL DICE</Button>}
+       }} >ROLL DICE</Button>}
+       
     </Box>
       </GamePopup>
         

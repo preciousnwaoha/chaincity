@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // @author: Developed by Pinqode.
-// @descpriton: Chaincity Game 
+// @descpriton: Chaincity Game
 // 0xC410679CEE6faf3e5D0F99666FCEAa6236564157
 // https://mumbai.polygonscan.com/address/0xC410679CEE6faf3e5D0F99666FCEAa6236564157#code
 

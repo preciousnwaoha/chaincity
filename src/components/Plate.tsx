@@ -12,6 +12,10 @@ import { LandInterface } from '@/utils/data.types'
 import Trade from './Trade'
 // import PayingRent from './PayingRent'
 
+import {io} from "socket.io-client";
+
+const socket = io('http://localhost:3001');
+
 interface PlateProps {
   divisions: number,
 }
@@ -51,6 +55,21 @@ const Plate = ({divisions} : PlateProps) => {
       
   //   }
   // }
+
+  const roomId = "10"
+
+  useEffect(() => {
+    socket.on('player-mover', ({ roomId, moveData}: {roomId: string, moveData: {
+      player: number, landID: string,
+    } }) => {
+      dispatch(gameActions.moveTo(moveData))
+    })
+
+    socket.on('next-turn', ({roomId}: {roomId: string}) => {
+      dispatch(gameActions.nextTurn())
+    })
+    
+  }, [game])
   
 
   const handleRollDice = (_dice1: number, _dice2: number, ) => {
@@ -59,7 +78,10 @@ const Plate = ({divisions} : PlateProps) => {
 
     const playerNextPos = getPlayerNextPosition(_dice1, _dice2, currentPlayer.position, gameStepSequence)
     
-    dispatch(gameActions.moveTo({player: turn, landID: playerNextPos}))
+    const moveData = {player: turn, landID: playerNextPos}
+    socket.emit('player-moved', {roomId, moveData})
+    dispatch(gameActions.moveTo(moveData))
+
     // setPlayerMoved(false)
 
     // handlePayRent(playerNextPos)

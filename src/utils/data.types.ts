@@ -51,6 +51,7 @@ export interface PlayerInterface {
     pendingRent: boolean,
     trades: TradeInterface[],
     bankrupt: boolean,
+    stake: number,
     isComputer: boolean
 }
 

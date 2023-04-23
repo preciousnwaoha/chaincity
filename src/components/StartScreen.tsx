@@ -10,6 +10,11 @@ import { gameActions } from "@/store/game-slice";
 import { PLAYERS_DUM } from '@/utils/dummy-data'
 import { LANDS, LAND_SETS } from '@/utils/monopoly-data'
 
+import {io} from "socket.io-client";
+
+const socket = io('http://localhost:3001');
+
+
 interface startScreenInterface {
     onHandleNewGame: () => void
 }
@@ -44,18 +49,43 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
   let gameStepSequence = [...usedLands.map((_, index) => `land-${index + 1}`)]
 
   
+  const roomId = "10"
 
-  const handleSetupGame = () => {
-    dispatch(gameActions.setupGamePlay({
+  const handleCreateGame = () => {
+
+    
+    // create game on chain
+
+    const stateData = {
+      text: "create game"
+    }
+
+    // get gameId and cityId
+    socket.emit('join-room', {roomId, stateData})
+
+    dispatch(gameActions.createGame({
       lands: usedLands,
       gameStepSequence,
       startingCash: 1500,
       bankCash: 100000,
-      landSets: LAND_SETS
+      landSets: LAND_SETS,
+      gameId: 100,
+      cityId: 100,
     }))
+
+    // new game
 
     onHandleNewGame()
   }
+
+  const handleJoinGame = () => {
+    // Client-side code: Join a room with a specific room ID.
+    const stateData = {text: "join game"}
+    socket.emit('join-room', {roomId, stateData});
+    onHandleNewGame()
+  }
+
+
     
     return <Box sx={{
         display: "flex",
@@ -70,9 +100,12 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
             mb: 4,
         }}>Chaincity</Typography>
         
-        <Button variant="contained" onClick={handleSetupGame} sx={{
+        <Button variant="contained" onClick={handleCreateGame} sx={{
             mb: 4
-        }}>NEW GAME</Button>
+        }}>CREATE GAME</Button>
+        <Button variant="contained" onClick={handleJoinGame} sx={{
+          mb: 4
+      }}>JOIN GAME</Button>
         <Grid container item  sx={{
             border: "1px solid red",
             justifyContent: "center"

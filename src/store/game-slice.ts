@@ -16,7 +16,9 @@ export interface GameState {
     bankLands: string[]
     bankHoldings: string[],
     turn: number,
-    playerHasWon: boolean
+    playerHasWon: boolean,
+    gameId: number,
+    cityId: number,
 }
 
   
@@ -33,7 +35,9 @@ const initialState: GameState = {
     bankLands: [],
     bankHoldings: [],
     turn: 0,
-    playerHasWon: false
+    playerHasWon: false,
+    gameId: 0,
+    cityId: 0,
 }
 
 const gameSlice = createSlice( {
@@ -51,12 +55,14 @@ const gameSlice = createSlice( {
             state.bankCash = action.payload.bankCash
             state.turn = action.payload.turn
         },
-        setupGamePlay(state, action: PayloadAction<{
+        createGame(state, action: PayloadAction<{
             lands: LandInterface[],
             gameStepSequence: string[],
             landSets: LandSetInterface[],
             startingCash: number,
             bankCash: number,
+            gameId: number,
+            cityId: number,
         }>) {
             
             state.lands = action.payload.lands
@@ -64,9 +70,11 @@ const gameSlice = createSlice( {
             state.landSets = action.payload.landSets
             state.startingCash = action.payload.startingCash
             state.bankCash = action.payload.bankCash
+            state.gameId = action.payload.gameId
+            state.cityId = action.payload.cityId
         },
-        setupPlayers(state, action: PayloadAction<PlayerInterface[]>) {
-            state.players = action.payload
+        addPlayer(state, action: PayloadAction<PlayerInterface>) {
+            state.players = [...state.players, action.payload]
         },
         startGame(state) {
             state.playing = true
@@ -85,9 +93,7 @@ const gameSlice = createSlice( {
         log(state, action: PayloadAction<LogInterface>) {
             state.logs.push(action.payload)
         },
-        addPlayer(state, action: PayloadAction<PlayerInterface>){
-            state.players.push(action.payload)
-        },
+        
         setBankCash() {
 
         },

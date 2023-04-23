@@ -14,6 +14,11 @@ import PayingRent from './PayingRent'
 import Trade from './Trade'
 import GamePopup from './GamePopup'
 
+import {io} from "socket.io-client";
+import { LandInterface } from '@/utils/data.types'
+
+const socket = io('http://localhost:3001');
+
 interface PlayerActionsProps {
     open: boolean,
     onFinishTurn: () => void,
@@ -56,10 +61,15 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
 
     const playerCanMortgage = (land.mortgaged === false) && (housesBuiltInSet === 0)
 
+    const roomId = 10;
+
     const handleBuy = () => {
       console.log("buy")
       setActioning(true)
-      dispatch(gameActions.buyLand({player: turn, landID}))
+
+      const stateData = {player: turn, landID}
+      socket.emit('buy-land', {roomId, stateData})
+      dispatch(gameActions.buyLand(stateData))
       setActioning(false)
     }
 
@@ -69,13 +79,17 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     const handleBuild = () => {
       
       setActioning(true)
-      dispatch(gameActions.build({land, player: turn}))
+      const stateData = {land, player: turn}
+      socket.emit('build', {roomId, stateData})
+      dispatch(gameActions.build(stateData))
       setActioning(false)
     }
 
     const handleSell = () => {
       setActioning(true)
-      dispatch(gameActions.sell({land, player: turn}))
+      const stateData = {land, player: turn}
+      socket.emit('sell', {roomId, stateData})
+      dispatch(gameActions.sell(stateData))
       setActioning(false)
     }
 
@@ -83,7 +97,9 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
 
       if (playerCanMortgage) {
         setActioning(true)
-        dispatch(gameActions.mortgage({player: turn, landID}))
+        const stateData = {player: turn, landID}
+        socket.emit('mortgage', {roomId, stateData})
+        dispatch(gameActions.mortgage(stateData))
         setActioning(false)
       }
       console.log("Mortgage")
@@ -91,7 +107,9 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     const handleUnmortgage = () => {
       if (playerCanUnmortgage) {
         setActioning(true)
-        dispatch(gameActions.unmortgage({player: turn, landID}))
+        const stateData = {player: turn, landID}
+        socket.emit('unmortgage', {roomId, stateData})
+        dispatch(gameActions.unmortgage(stateData))
         setActioning(false)
       }
       console.log("Unmortgage")
@@ -113,8 +131,9 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
           landOwnerIndex = i
         }
       }
-
-      dispatch(gameActions.bankrupt({player: turn, bankrupter: landOwnerIndex}))
+      const stateData = {player: turn, bankrupter: landOwnerIndex}
+      socket.emit('bankrupt', {roomId, stateData})
+      dispatch(gameActions.bankrupt(stateData))
 
     }
 
@@ -124,12 +143,59 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     
       useEffect(() => {
         if (pendingRent) {
-          dispatch(gameActions.payRent({player: turn, landID}))
+          const stateData = {player: turn, landID}
+          socket.emit('pay-rent', {roomId, stateData})
+          dispatch(gameActions.payRent(stateData))
         }
       }, [pendingRent, dispatch, turn, landID])
 
       
+      useEffect(() => {
+        socket.on('buy-land', ({ roomId, stateData}: {roomId: string, stateData: {
+          player: number, landID: string,
+        } }) => {
+          dispatch(gameActions.buyLand(stateData))
+        })
 
+        socket.on('mortgage', ({ roomId, stateData}: {roomId: string, stateData: {
+          player: number, landID: string,
+        } }) => {
+          dispatch(gameActions.mortgage(stateData))
+        })
+
+        socket.on('unmortgage', ({ roomId, stateData}: {roomId: string, stateData: {
+          player: number, landID: string,
+        } }) => {
+          dispatch(gameActions.unmortgage(stateData))
+        })
+        socket.on('pay-rent', ({ roomId, stateData}: {roomId: string, stateData: {
+          player: number, landID: string,
+        } }) => {
+          dispatch(gameActions.payRent(stateData))
+        })
+
+        socket.on('bankrupt', ({ roomId, stateData}: {roomId: string, stateData: {
+          player: number, bankrupter: number,
+        } }) => {
+          dispatch(gameActions.bankrupt(stateData))
+        })
+
+
+        socket.on('build', ( { roomId, stateData}: {roomId: string, stateData: {
+          land: LandInterface, player: number
+        } }) => {
+          dispatch(gameActions.build(stateData))
+        })
+
+        socket.on('sell', ( { roomId, stateData}: {roomId: string, stateData: {
+          land: LandInterface, player: number
+        } }) => {
+          dispatch(gameActions.sell(stateData))
+        })
+
+
+
+      }, [game])
 
   return (
     <>
