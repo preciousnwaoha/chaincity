@@ -98,7 +98,7 @@ const PlayerSelection = ({onDone, onBack}: PlayerSelectionInterface) => {
       };
     });
 
-    dispatch(gameActions.setupPlayers(players));
+    // dispatch(gameActions.setupPlayers(players));
     onDone()
     
   };
