@@ -18,8 +18,8 @@ import artifact from '@/utils/artifacts/contracts/Chaincity.json'
 import { contractActions } from "@/store/contract-slice"
 import Stake from "@/components/Stake"
 import AddPlayer from "@/components/AddPlayer"
-const CONTRACT_ADDRESS = "0x6B834621B5891AaFe77EDea2BC257049013e5C86"
-const TOKEN_ADDRESS = "0xC410679CEE6faf3e5D0F99666FCEAa6236564157"
+const CONTRACT_ADDRESS = "0xC410679CEE6faf3e5D0F99666FCEAa6236564157"
+const TOKEN_ADDRESS = "0x6B834621B5891AaFe77EDea2BC257049013e5C86"
 
 
 export default function Home() {
@@ -33,8 +33,6 @@ export default function Home() {
   useEffect(() => {
     
      const onLoad = async () => {
-      // const providerAlt: ethers.providers.AlchemyProvider = await new ethers.providers.AlchemyProvider("goerli", API_KEY);
-      // setProvider(providerAlt);
       const provider: ethers.providers.Web3Provider = new       ethers.providers.Web3Provider(window.ethereum!);
       console.log("provider: ", provider)
   
