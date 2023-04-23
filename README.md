@@ -1,38 +1,45 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Chaincity
+## The Monopoly of the future.
 
-## Getting Started
+### Description
+Put simply Chaincity is monopoly on the blockchain. However that would be understating the innovation in this game project. Chaincity is a blockchain protocol, marketplace and a game that allows users to compete on different terrains for to grow thier assets.
 
-First, run the development server:
+Chaincity is made up of cities, properties(lands), and game sessions and the game is run on CITYCoin (dedicated ERC20).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+Heres a breakdown to understand how Chaincity works:
+1. CITIES: We have build a terrain were you can create a what we call a city, it comprises of Lands and game.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Lands(Properties): Every city has a set of lands created by the City owner, and a sequence in which the lands must be followed for a run circle (first land to last land). The usual rules of traditional monopoly apply here. Players can pay rent, buy, mortgage, sell lands etc.
+IMPORTANT: This lands are actually going to be NFTs in Chaincity beta.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+3. Games: A player can create or join a game, on entering they stake eth. and are given the traditional 1500 tokens to play the game. when there's a winner the result is calculated using an algorithm in the smart contract.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+The smart contract: This comprises of Game tokens (Minted on Bunzz), Cities contract, a security auth protocol, a liquitiy pool and the actual game code.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Tech
+This is a web2-web2 dapp
+1. Bunzz for tokens and part of Game contract
+2. Solidity for game Contract
+3. Socket.io for low-latency requests
+4. Next.js for Frontend
+5. Node.js/Express for Server.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### What value does this all bring.
+1. Chaincity will provide a new way to grow assets as the winner of each game takes home eth, other players are given CITYCoin. CITYCoin increases in value with each game as the leftover eth is locked in a liquidity pool with an AMM.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+2. The cityOwners (city developers) can set a fee for each game play known as city fee to generate creators revenue
 
-## Deploy on Vercel
+3. The lands from each city will be sold as NFTs and create a whole new ecosystem(marketplace)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. The lands in a city with high engagement are valueable because the initial rent in a game play goes to the land owner
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+### Project Status
+Very much not complete, but were heading there.
+
+
+### This project was driven by the Web3Africa Hackathon
+
