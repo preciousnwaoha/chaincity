@@ -117,10 +117,12 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     const handleOpenTrading = () => {
       setActioning(true)
       setTrading(true)
+      socket.emit('open-trading', {roomId})
     }
     const handleCloseTrading = () => {
       setTrading(false)
       setActioning(false)
+      socket.emit('close-trading', {roomId})
     }
 
     const handleDeclareBankrupcy = () => {
@@ -142,6 +144,7 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     }
     
       useEffect(() => {
+        socket.emit('rejoin', {roomId})
         if (pendingRent) {
           const stateData = {player: turn, landID}
           socket.emit('pay-rent', {roomId, stateData})
@@ -154,29 +157,34 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
         socket.on('buy-land', ({ roomId, stateData}: {roomId: string, stateData: {
           player: number, landID: string,
         } }) => {
+          console.log('bought land')
           dispatch(gameActions.buyLand(stateData))
         })
 
         socket.on('mortgage', ({ roomId, stateData}: {roomId: string, stateData: {
           player: number, landID: string,
         } }) => {
+          console.log('mortgaged land')
           dispatch(gameActions.mortgage(stateData))
         })
 
         socket.on('unmortgage', ({ roomId, stateData}: {roomId: string, stateData: {
           player: number, landID: string,
         } }) => {
+          console.log('unmor land')
           dispatch(gameActions.unmortgage(stateData))
         })
         socket.on('pay-rent', ({ roomId, stateData}: {roomId: string, stateData: {
           player: number, landID: string,
         } }) => {
+          console.log('pay rent')
           dispatch(gameActions.payRent(stateData))
         })
 
         socket.on('bankrupt', ({ roomId, stateData}: {roomId: string, stateData: {
           player: number, bankrupter: number,
         } }) => {
+          console.log('bankrupt')
           dispatch(gameActions.bankrupt(stateData))
         })
 
@@ -184,18 +192,27 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
         socket.on('build', ( { roomId, stateData}: {roomId: string, stateData: {
           land: LandInterface, player: number
         } }) => {
+          console.log('build')
           dispatch(gameActions.build(stateData))
         })
 
         socket.on('sell', ( { roomId, stateData}: {roomId: string, stateData: {
           land: LandInterface, player: number
         } }) => {
+          console.log('sell')
           dispatch(gameActions.sell(stateData))
         })
 
 
-
-      }, [game])
+        socket.on('open-trading', () => {
+          setTrading(true)
+        setActioning(true)
+        })
+        socket.on('close-trading', () => {
+          setTrading(false)
+          setActioning(false)
+        })
+      }, [game, trading])
 
   return (
     <>

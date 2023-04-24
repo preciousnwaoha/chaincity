@@ -76,6 +76,9 @@ const gameSlice = createSlice( {
         addPlayer(state, action: PayloadAction<PlayerInterface>) {
             state.players = [...state.players, action.payload]
         },
+        updatePlayers(state, action: PayloadAction<PlayerInterface[]>) {
+            state.players = [...action.payload]
+        },
         startGame(state) {
             state.playing = true
             state.turn = 0

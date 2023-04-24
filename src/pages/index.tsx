@@ -18,6 +18,7 @@ import artifact from '@/utils/artifacts/contracts/Chaincity.json'
 import { contractActions } from "@/store/contract-slice"
 import Stake from "@/components/Stake"
 import AddPlayer from "@/components/AddPlayer"
+import ConnectWallet from "@/components/ConnectWallet"
 const CONTRACT_ADDRESS = "0xC410679CEE6faf3e5D0F99666FCEAa6236564157"
 const TOKEN_ADDRESS = "0x6B834621B5891AaFe77EDea2BC257049013e5C86"
 
@@ -28,6 +29,8 @@ export default function Home() {
 
   const [createdGame, setCreatedGame ] = useState(false)
   const [playerStaked, setPlayerStaked] = useState(false);
+
+  const {currentAccount} = contract;
 
 
   useEffect(() => {
@@ -76,6 +79,9 @@ export default function Home() {
     setPlayerStaked(false);
   }
 
+  
+  const connected = currentAccount !== ""
+
   return (
     <>
       <Head>
@@ -86,9 +92,15 @@ export default function Home() {
       </Head>
       <main >
         <Box>
+          {!connected ? 
+          <ConnectWallet />  :
+          <>
           {!createdGame && <StartScreen onHandleNewGame={handleCreatedGame} />}
           {(createdGame && !playerStaked ) && <Stake onDone={handleStaked} onBack={handleStakedBack} /> }
           {(createdGame && playerStaked ) && <AddPlayer />}
+          </>
+        }
+          
           
          
         </Box>

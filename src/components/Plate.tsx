@@ -59,14 +59,18 @@ const Plate = ({divisions} : PlateProps) => {
   const roomId = "10"
 
   useEffect(() => {
-    socket.on('player-mover', ({ roomId, moveData}: {roomId: string, moveData: {
+    socket.emit('rejoin', {roomId}) 
+
+    socket.on('player-moved', ({ roomId, moveData}: {roomId: string, moveData: {
       player: number, landID: string,
     } }) => {
       dispatch(gameActions.moveTo(moveData))
+      setShowCurrentPlayerActions(true);
     })
 
-    socket.on('next-turn', ({roomId}: {roomId: string}) => {
+    socket.on('next-turn', () => {
       dispatch(gameActions.nextTurn())
+      setShowCurrentPlayerActions(false)
     })
     
   }, [game])
@@ -92,6 +96,7 @@ const Plate = ({divisions} : PlateProps) => {
 
   const handleFinishTurn = () => {
     setShowCurrentPlayerActions(false)
+    socket.emit('next-turn', {roomId})
     dispatch(gameActions.nextTurn())
   }
 

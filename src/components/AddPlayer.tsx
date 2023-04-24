@@ -25,39 +25,42 @@ const AddPlayer = () => {
   const settings = useSelector((state: RootState) => state.settings);
   const contract = useSelector((state: RootState) => state.contract)
 
-    const {players, gameStepSequence, startingCash, gameId, cityId } = game;
+    const {players, gameStepSequence, startingCash, gameId, cityId, playing } = game;
     const {currentAccount} = contract;
 
-    const roomId = 10;
+    const roomId = "10";
 
-    useEffect(() => {
-      socket.on('add-player', ({roomId, player}: {roomId: string, player: PlayerInterface}) => {
-        dispatch(gameActions.addPlayer(player))
-      })
-
-      socket.on('start-game', ({roomId}: {roomId: string}) => {
-        dispatch(gameActions.startGame())
-        router.push("/game")
-      })
-    }, [game])
-
+    
     const isStarter = (currentAccount === players[0].address);
 
     
       let canStartGame =isStarter && (players.length >= 2)
 
       
+   console.log({playing})
 
       const handleStartGame = () => {
         // startgame on chain
-
+        console.log('red')
         // startgame on socket
-        socket.emit('start-game', {roomId, game})
+        socket.emit('start-game', {roomId, turn: 0})
         dispatch(gameActions.startGame())
-            
-        router.push("/game")
        
       };
+
+      useEffect(() => {
+        socket.emit('rejoin', {roomId})
+        console.log("blue")
+        socket.on('started-game', (turn) => {
+          console.log("started game in ", turn)
+          dispatch(gameActions.startGame())
+        })
+
+        if (playing === true) {
+          router.push("/game")
+        }
+      }, [playing])
+  
 
   return (
     <Box sx={{

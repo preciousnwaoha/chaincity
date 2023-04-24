@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
@@ -27,9 +27,9 @@ interface StakeInterface {
 
 const Stake = ({onDone, onBack} : StakeInterface) => {
     const dispatch = useDispatch();
-    const contract = useSelector((state: RootState) => state.contract)
+    const contract = useSelector((state: RootState) => state.contract);
     const game = useSelector((state: RootState) => state.game);
-  const settings = useSelector((state: RootState) => state.settings);
+    const settings = useSelector((state: RootState) => state.settings);
     const [stake, setStake] = React.useState(0)
     const [staked, setStaked] = React.useState(false);
 
@@ -37,40 +37,23 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
    const {provider, currentAccount, balance, tokenBalance, tokenContract} = contract
    const {players, startingCash, gameStepSequence} =  game
 
-   const getBalance = async (_address :string, _signer: ethers.providers.JsonRpcSigner) => {
-    let balance = await tokenContract!.connect(_signer!).balanceOf(_address)
-    balance = parseFloat(ethers.utils.formatEther(balance))
-    
-    return balance
-   }
+   useEffect(() => {
 
-const getSignerData = async () => {
-    provider!.send("eth_requestAccounts", [])
-    const signer = provider!.getSigner()
-    return signer
-   }
+    socket.on('get-room-state', (players) => {
+        console.log("Get room state");
+        dispatch(gameActions.updatePlayers(players));
+    })
 
-const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert("Get MetaMask!");
-      return;
-    }
+    socket.on("player-joined-room", (players) => {
+        const newPlayer = players[players.length - 1]
+        console.log("Welcome", newPlayer.name);
+        // dispatch(gameActions.addPlayer(player));
+        dispatch(gameActions.updatePlayers(players));
+    })
 
-    /* ------ get signer ------ */
-    const signer = await getSignerData()
-    console.log({signer})
+   }, [players])
 
-    /* ------ get signer address ------ */
-    const address = await signer.getAddress()
-    console.log({address})
-    
-
-    /* ------ get signer balance ------ */
-    const balance = await getBalance(address, signer)
-    
-    dispatch(contractActions.stageAccount({currentAccount: address, accounts: [address], signer, tokenBalance: balance}))
- }
-
+   
    const handleStakeChange = (event: any) => {
     setStake(event.target.value)
    }
@@ -86,7 +69,7 @@ const connectWallet = async () => {
         const player = {
           
             name: `Player ${players.length + 1}`,
-            address: `p-${players.length + 1}`,
+            address: currentAccount,
             lands: [],
             character: CHARACTERS[players.length],
             cash: startingCash,
@@ -104,8 +87,9 @@ const connectWallet = async () => {
 
           // add player on chain
 
-          socket.emit('add-player', {roomId, player})
-        dispatch(gameActions.addPlayer(player)); // ---
+          
+            socket.emit('join-room', {roomId, player});
+         // ---
         // add player socket
         setStaked(true);
         
@@ -119,7 +103,7 @@ const connectWallet = async () => {
         onBack()
     }
 
-    const walletConnected = currentAccount !== ""
+    
 
     
 
@@ -143,11 +127,7 @@ const connectWallet = async () => {
             borderRadius: "12px",
             minHeight: "40vh"
         }}>
-            {!walletConnected ? <>
-            <Box>
-                <Button onClick={connectWallet} >Connect wallet</Button>
-            </Box>
-            </> : <>
+            <>
             {!staked ? <>
                 <Typography>Stake MATIC</Typography>
             <Typography>Matic Balance: {balance}</Typography>
@@ -156,7 +136,7 @@ const connectWallet = async () => {
             </>: <Box>
                 Staked {stake} MATIC
                 </Box>}
-            </>}
+            </>
             
              </Paper>
             

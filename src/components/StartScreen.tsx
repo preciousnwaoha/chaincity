@@ -4,8 +4,11 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useRouter } from 'next/router'
-import { useDispatch } from "react-redux";
-import { gameActions } from "@/store/game-slice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { gameActions} from "@/store/game-slice";
+import { contractActions } from "@/store/contract-slice"
+import {ethers} from 'ethers';
 
 import { PLAYERS_DUM } from '@/utils/dummy-data'
 import { LANDS, LAND_SETS } from '@/utils/monopoly-data'
@@ -21,6 +24,11 @@ interface startScreenInterface {
 
 const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
     const dispatch = useDispatch();
+  const contract = useSelector((state: RootState) => state.contract)
+    const {currentAccount, provider, tokenContract} = contract;
+
+    
+
 
   const usedLands = LANDS.map((land, index) => {
     return {
@@ -56,12 +64,6 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
     
     // create game on chain
 
-    const stateData = {
-      text: "create game"
-    }
-
-    // get gameId and cityId
-    socket.emit('join-room', {roomId, stateData})
 
     dispatch(gameActions.createGame({
       lands: usedLands,
@@ -75,13 +77,23 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
 
     // new game
 
+
     onHandleNewGame()
   }
 
   const handleJoinGame = () => {
-    // Client-side code: Join a room with a specific room ID.
-    const stateData = {text: "join game"}
-    socket.emit('join-room', {roomId, stateData});
+    dispatch(gameActions.createGame({
+      lands: usedLands,
+      gameStepSequence,
+      startingCash: 1500,
+      bankCash: 100000,
+      landSets: LAND_SETS,
+      gameId: 100,
+      cityId: 100,
+    }))
+
+
+    
     onHandleNewGame()
   }
 
