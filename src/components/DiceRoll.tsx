@@ -7,6 +7,9 @@ import Box from "@mui/material/Box";
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import GamePopup from './GamePopup';
+import {io} from "socket.io-client";
+
+const socket = io('http://localhost:3001');
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -32,7 +35,7 @@ const DiceRoll = ({onRollDice}: DiceRollProps) => {
     const [rolling, setRolling] = React.useState(false);
     // const [rolled, setRolled] = React.useState(false);
 
-    const {turn, players} = game
+    const {turn, players, roomId} = game
     const {currentAccount} = contract;
     
     const isClientTurn = players[turn].address === currentAccount
@@ -52,20 +55,34 @@ const DiceRoll = ({onRollDice}: DiceRollProps) => {
             setDices(undefined)
               setOpen(false)
               onRollDice(dice1, dice2)
+              socket.emit('dice-roll', {roomId, dice1, dice2})
         
           }, 2000)
 
         }, 1000)
-
-        
-        
-
-        
-
-        
-
-        
     }
+
+
+    useEffect(() => {
+      socket.emit('rejoin', {roomId})
+
+        socket.on('dice-roll', ({dice1, dice2}) => {
+          console.log(`Player ${turn + 1} rolled dice.`)
+          setRolling(true)
+
+        setTimeout(() => {
+          setDices([dice1, dice2])
+          setRolling(false)
+
+          setTimeout(() => {
+            setDices(undefined)
+              setOpen(false)
+        
+          }, 2000)
+
+        }, 1000)
+        })
+    }, [dices, rolling])
 
     useEffect(() => {
         setOpen(true)
@@ -102,15 +119,19 @@ const DiceRoll = ({onRollDice}: DiceRollProps) => {
           color: "primary.contrastText",
         mt: 2,
 
-        }} >Rolling...</Typography> }
+        }} >{isClientTurn ? "You're" : `Player ${turn + 1}`} Rolling...</Typography> }
         
          {(dicesOn && !rolling) && <Typography sx={{
           p: 2,
           color: "white",
          }}>{dices[0]} : {dices[1]}</Typography>}
+
+         
        {(!dicesOn && !rolling && isClientTurn) && <Button variant="contained" onClick={handleDiceRoll} sx={{
         mt: 2,
        }} >ROLL DICE</Button>}
+
+       {(!dicesOn && !rolling && !isClientTurn) && <Box>Wating for {`Player ${turn + 1} to roll`}</Box>}
        
     </Box>
       </GamePopup>

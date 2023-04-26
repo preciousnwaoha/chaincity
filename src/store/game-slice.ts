@@ -19,6 +19,7 @@ export interface GameState {
     playerHasWon: boolean,
     gameId: number,
     cityId: number,
+    roomId: string
 }
 
   
@@ -38,6 +39,7 @@ const initialState: GameState = {
     playerHasWon: false,
     gameId: 0,
     cityId: 0,
+    roomId: '',
 }
 
 const gameSlice = createSlice( {
@@ -63,6 +65,7 @@ const gameSlice = createSlice( {
             bankCash: number,
             gameId: number,
             cityId: number,
+            roomId: string
         }>) {
             
             state.lands = action.payload.lands
@@ -72,6 +75,7 @@ const gameSlice = createSlice( {
             state.bankCash = action.payload.bankCash
             state.gameId = action.payload.gameId
             state.cityId = action.payload.cityId
+            state.roomId = action.payload.roomId
         },
         addPlayer(state, action: PayloadAction<PlayerInterface>) {
             state.players = [...state.players, action.payload]

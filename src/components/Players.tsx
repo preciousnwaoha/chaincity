@@ -1,19 +1,26 @@
-import React from "react"
+import React, {useEffect} from "react"
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
+import { gameActions } from '@/store/game-slice'
 import { RootState } from "@/store"
-import { groupPlayerLandsInSets } from "@/utils/functions"
+import { groupPlayerLandsInSets, getLandFromID } from "@/utils/functions"
 import PlayerLandsInSets from "./PlayerLandsInSets"
 
+import {io} from "socket.io-client";
+
+const socket = io('http://localhost:3001');
 
 const Players = () => {
+    const dispatch = useDispatch()
+    const contract = useSelector((state: RootState) => state.contract)
     const game = useSelector((state: RootState) => state.game)
     const settings = useSelector((state: RootState) => state.settings)
     const [showPlayerLands, setShowPlayerLands] = React.useState<number | null>(null)
 
-    const {players, turn, lands} = game
+    const {players, turn, lands, roomId} = game
+    const {currentAccount} = contract
 
 
     const landsGroupedInSets = groupPlayerLandsInSets(players[turn].lands, lands)
@@ -30,6 +37,39 @@ const Players = () => {
             return index
         })
     }
+
+    const client = players.filter(player => player.address === currentAccount)[0]
+
+    const {position: landID} = client
+
+    const land = getLandFromID(landID, lands)
+
+    const handleBankrupt = () => {
+        
+        let landOwnerIndex = players.length
+
+      for (let i = 0; i < players.length; i++) {
+        if (players[i].address === land.owner) {
+          landOwnerIndex = i
+        }
+      }
+
+      const stateData = {player: turn, bankrupter: landOwnerIndex}
+      socket.emit('bankrupt', {roomId, stateData})
+      dispatch(gameActions.bankrupt(stateData))
+    }
+
+
+    useEffect(() => {
+        socket.emit('rejoin', {roomId})
+
+        socket.on('bankrupt', ({ roomId, stateData}: {roomId: string, stateData: {
+            player: number, bankrupter: number,
+          } }) => {
+            console.log('bankrupt')
+            dispatch(gameActions.bankrupt(stateData))
+          })
+    })
 
 
 
@@ -70,6 +110,7 @@ const Players = () => {
                             color: "white"
                         }}>{player.name}</Typography>
                     </Box>
+                    {(player.address === currentAccount) && <Box onClick={handleBankrupt}>BANKRUPT</Box>}
                     <Typography variant="body1" sx={{
                         color: "white",
                     }}>{tokenSymbol}{player.cash}</Typography>

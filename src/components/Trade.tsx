@@ -11,6 +11,10 @@ import { gameActions } from "@/store/game-slice"
 import TradePlate from "./TradePlate"
 import GamePopup from "./GamePopup"
 
+import {io} from "socket.io-client";
+
+const socket = io('http://localhost:3001');
+
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -41,13 +45,39 @@ const Trade = ({open, onClose}: TradeInterface) => {
   
     
 
-    const {players, turn,} = game
+    const {players, turn, roomId} = game
 
     const player = players[turn]
 
     const {trades} = player
 
     const offers = trades.filter(trade => trade.from !== turn)
+
+
+    useEffect(() => {
+      socket.emit('rejoin', {roomId})
+
+      socket.on('place-trade', ({tradeData}) => {
+        dispatch(gameActions.placeTrade(tradeData))
+      })
+
+      socket.on('accept-trade', ({player, trader}) => {
+        dispatch(gameActions.acceptTrade({
+          player,
+          trader
+        }))
+        setPendingTrades(false)
+      })
+
+      socket.on('reject-trade', ({player, trader}) => {
+        dispatch(gameActions.rejectTrade({
+          player,
+          trader
+        }))
+        setPendingTrades(false)
+      })
+
+    }, [players])
 
     const handleTraderData = (traderLandIds: string[], traderCash: number) => {
       setLandIDsFrom(traderLandIds)
@@ -60,15 +90,21 @@ const Trade = ({open, onClose}: TradeInterface) => {
     }
 
 
+
     const handlePlaceTrade = () => {
-        dispatch(gameActions.placeTrade({
-            from: turn,
-            to: tradee!,
-            cashFrom,
-            cashTo,
-            landIDsFrom,
-            landIDsTo,
-        }))
+
+      const tradeData = {
+        from: turn,
+        to: tradee!,
+        cashFrom,
+        cashTo,
+        landIDsFrom,
+        landIDsTo,
+    }
+
+        socket.emit('place-trade', {roomId, tradeData})
+
+        dispatch(gameActions.placeTrade(tradeData))
         onClose()
     }
 

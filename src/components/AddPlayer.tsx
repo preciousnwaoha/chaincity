@@ -25,10 +25,8 @@ const AddPlayer = () => {
   const settings = useSelector((state: RootState) => state.settings);
   const contract = useSelector((state: RootState) => state.contract)
 
-    const {players, gameStepSequence, startingCash, gameId, cityId, playing } = game;
+    const {roomId, players, gameStepSequence, startingCash, gameId, cityId, playing } = game;
     const {currentAccount} = contract;
-
-    const roomId = "10";
 
     
     const isStarter = (currentAccount === players[0].address);

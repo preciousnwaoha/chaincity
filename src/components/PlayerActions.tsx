@@ -27,11 +27,15 @@ interface PlayerActionsProps {
 const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
   const dispatch = useDispatch()
   const game = useSelector((state: RootState) => state.game)
+  const contract = useSelector((state: RootState) => state.contract)
   const [actioning, setActioning] = React.useState(false)
   // const [paidRent, setPaidRent] = React.useState(false)
   const [trading, setTrading] = React.useState(false)
 
-  const {turn, players, lands} = game
+  const {turn, players, lands, roomId} = game
+  const {currentAccount} = contract
+
+  const isClientTurn = currentAccount === players[turn].address
 
     const player = players[turn]
 
@@ -61,7 +65,7 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
 
     const playerCanMortgage = (land.mortgaged === false) && (housesBuiltInSet === 0)
 
-    const roomId = 10;
+
 
     const handleBuy = () => {
       console.log("buy")
@@ -136,6 +140,7 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
       const stateData = {player: turn, bankrupter: landOwnerIndex}
       socket.emit('bankrupt', {roomId, stateData})
       dispatch(gameActions.bankrupt(stateData))
+      onFinishTurn()
 
     }
 
@@ -186,6 +191,7 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
         } }) => {
           console.log('bankrupt')
           dispatch(gameActions.bankrupt(stateData))
+          onFinishTurn()
         })
 
 
@@ -232,6 +238,28 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
 >
   
   <Paper >
+    
+    {!isClientTurn ? <Box>
+      <Deed
+      id={land.id}
+      type={land.type}
+      setID={land.setID}
+      color={land.color}
+      name={land.name}
+      rent={land.rent}
+      mortgageFactor={land.mortgageFactor}
+      unmortgageFactor={land.unmortgageFactor}
+      price={land.price}
+      maxHouses={land.maxHouses}
+      maxHotels={land.maxHotels}
+      houseRentFactor={land.houseRentFactor}
+      image={land.image}
+      owner={land.owner}
+      houses={land.houses}
+    />
+    <Typography>Player {turn + 1} is actioning here</Typography>
+      
+    </Box> : <>
     <Box>
     <Deed
       id={land.id}
@@ -283,10 +311,8 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
 
     }
     </Box>
-      
-    
-    
     </Box>
+    
     <Grid container item sx ={{
       display: "flex",
       justifyContent: "center",
@@ -303,6 +329,14 @@ const PlayerActions = ({open, onFinishTurn} : PlayerActionsProps) => {
     </Grid>
   
   
+    </>}
+    
+    
+
+      
+    
+    
+    
 </Paper>
 </GamePopup>}
     </>

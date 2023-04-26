@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect} from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -25,9 +25,11 @@ interface startScreenInterface {
 const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
     const dispatch = useDispatch();
   const contract = useSelector((state: RootState) => state.contract)
-    const {currentAccount, provider, tokenContract} = contract;
-
-    
+  const game = useSelector((state: RootState) => state.game)
+  const [showNoRoom, setShowNoRoom] = React.useState(false)
+  
+  const {currentAccount, provider, tokenContract} = contract;
+  
 
 
   const usedLands = LANDS.map((land, index) => {
@@ -57,13 +59,15 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
   let gameStepSequence = [...usedLands.map((_, index) => `land-${index + 1}`)]
 
   
-  const roomId = "10"
 
   const handleCreateGame = () => {
 
     
     // create game on chain
 
+    const roomId = `${Math.random() * 10000000000^2}`
+    
+    socket.emit('create-room', {roomId})
 
     dispatch(gameActions.createGame({
       lands: usedLands,
@@ -73,6 +77,7 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
       landSets: LAND_SETS,
       gameId: 100,
       cityId: 100,
+      roomId,
     }))
 
     // new game
@@ -82,20 +87,44 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
   }
 
   const handleJoinGame = () => {
-    dispatch(gameActions.createGame({
-      lands: usedLands,
-      gameStepSequence,
-      startingCash: 1500,
-      bankCash: 100000,
-      landSets: LAND_SETS,
-      gameId: 100,
-      cityId: 100,
-    }))
 
-
+    socket.emit('join-room')
     
-    onHandleNewGame()
+    
   }
+
+  useEffect(() => {
+
+    socket.on('no-room-found', () => {
+      setShowNoRoom(true)
+    })
+
+    socket.on('joined-room', (roomId) => {
+
+      dispatch(gameActions.createGame({
+        lands: usedLands,
+        gameStepSequence,
+        startingCash: 1500,
+        bankCash: 100000,
+        landSets: LAND_SETS,
+        gameId: 100,
+        cityId: 100,
+        roomId,
+      }))
+
+      onHandleNewGame()
+    })
+
+  }, [game])
+
+
+  useEffect(() => {
+    if (showNoRoom === true) {
+      setTimeout(() => {
+        setShowNoRoom(false)
+      }, 3000)
+    }
+  }, [showNoRoom])
 
 
     
@@ -115,9 +144,9 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
         <Button variant="contained" onClick={handleCreateGame} sx={{
             mb: 4
         }}>CREATE GAME</Button>
-        <Button variant="contained" onClick={handleJoinGame} sx={{
+        {showNoRoom ? <Box>No Room Found</Box> : <Button variant="contained" onClick={handleJoinGame} sx={{
           mb: 4
-      }}>JOIN GAME</Button>
+      }}>JOIN GAME</Button>}
         <Grid container item  sx={{
             border: "1px solid red",
             justifyContent: "center"

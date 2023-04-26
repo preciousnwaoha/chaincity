@@ -23,17 +23,17 @@ interface PlateProps {
 const Plate = ({divisions} : PlateProps) => {
   const dispatch = useDispatch()
   const game = useSelector((state: RootState) => state.game)
-
+  const contract = useSelector((state: RootState) => state.contract)
   const [showCurrentPlayerActions, setShowCurrentPlayerActions] = React.useState(false)
   // const [cellsOccupied, setCellsOccupied] = React.useState([])
   // const [playerMoved, setPlayerMoved] = React.useState(false)
   const [showPendingTradeOffers, setShowPendingTradeOffers] = React.useState(false)
+  const [showEndGame, setShowEndGame] = React.useState(false)
 
 
 
-
-
-  const {players, lands,  turn, gameStepSequence} = game
+  const {players, lands,  turn, gameStepSequence, roomId, playerHasWon} = game
+  const {currentAccount} = contract
 
   
   const player = players[turn]
@@ -56,7 +56,6 @@ const Plate = ({divisions} : PlateProps) => {
   //   }
   // }
 
-  const roomId = "10"
 
   useEffect(() => {
     socket.emit('rejoin', {roomId}) 
@@ -105,11 +104,25 @@ const Plate = ({divisions} : PlateProps) => {
   }
 
   useEffect(() => {
-    if (offers.length > 0) {
+
+    if (players[turn].bankrupt === true) {
+      socket.emit('next-turn', {roomId})
+      dispatch(gameActions.nextTurn())
+    } else if (offers.length > 0) {
       setShowPendingTradeOffers(true)
     }
     console.log(offers)
   }, [turn, offers])
+
+  useEffect(() => {
+    if (playerHasWon === true) {
+      const winningPlayer = players.filter(players => player.bankrupt === false)[0]
+      const clientIsWinner = winningPlayer.address === currentAccount
+      if (clientIsWinner) {
+        setShowEndGame(true)
+      }
+    }
+  }, [playerHasWon])
 
 
 

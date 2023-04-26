@@ -11,7 +11,7 @@ export interface contractState {
     signer: ethers.providers.JsonRpcSigner | undefined
     tokenContract: contractType,
     gameContract: contractType,
-    tokenBalance: 0,
+    tokenBalance: number,
 }
 
 
@@ -36,9 +36,15 @@ const contractSlice = createSlice( {
             state.provider = action.payload.provider
             state.gameContract = action.payload.gameContract
         },
-        stageAccount(state, action) {
+        stageAccount(state, action: PayloadAction<{
+            signer: ethers.providers.JsonRpcSigner,
+            currentAccount: string,
+            accounts: string[],
+            balance: number,
+            tokenBalance: number,
+        }>) {
             state.signer = action.payload.signer
-            state.currentAccount = action.payload.account
+            state.currentAccount = action.payload.currentAccount
             state.accounts = action.payload.accounts
             state.balance = action.payload.balance
             state.tokenBalance = action.payload.tokenBalance

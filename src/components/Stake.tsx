@@ -35,16 +35,22 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
 
     
    const {provider, currentAccount, balance, tokenBalance, tokenContract} = contract
-   const {players, startingCash, gameStepSequence} =  game
+   const {players, startingCash, gameStepSequence, roomId} =  game
 
    useEffect(() => {
 
-    socket.on('get-room-state', (players) => {
+    socket.emit('rejoin', {roomId})
+
+    socket.on('cannot-add-self-twice', () => {
+        console.log('cannot add self twice')
+    })
+
+    socket.on('client-added-to-room', (players) => {
         console.log("Get room state");
         dispatch(gameActions.updatePlayers(players));
     })
 
-    socket.on("player-joined-room", (players) => {
+    socket.on("added-player-to-room", (players) => {
         const newPlayer = players[players.length - 1]
         console.log("Welcome", newPlayer.name);
         // dispatch(gameActions.addPlayer(player));
@@ -58,7 +64,8 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
     setStake(event.target.value)
    }
 
-   const roomId = "10"
+   console.log({currentAccount})
+
 
     const handleStake = () => {
         //check
@@ -88,7 +95,7 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
           // add player on chain
 
           
-            socket.emit('join-room', {roomId, player});
+            socket.emit('add-player-to-room', {roomId, player});
          // ---
         // add player socket
         setStaked(true);
