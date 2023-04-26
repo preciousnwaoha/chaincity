@@ -27,8 +27,8 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
   const contract = useSelector((state: RootState) => state.contract)
   const game = useSelector((state: RootState) => state.game)
   const [showNoRoom, setShowNoRoom] = React.useState(false)
-  
-  const {currentAccount, provider, tokenContract} = contract;
+  const {cityId} = game
+  const {currentAccount, signer, gameContract} = contract;
   
 
 
@@ -60,10 +60,12 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
 
   
 
-  const handleCreateGame = () => {
+  const handleCreateGame = async () => {
 
     
     // create game on chain
+    const createGameTxn = await gameContract!.connect(signer!).createGame(cityId, 1500, process.env.INPUTAUTH)
+    await createGameTxn.wait();
 
     const roomId = `${Math.random() * 10000000000^2}`
     

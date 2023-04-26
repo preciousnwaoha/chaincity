@@ -34,8 +34,8 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
     const [staked, setStaked] = React.useState(false);
 
     
-   const {provider, currentAccount, balance, tokenBalance, tokenContract} = contract
-   const {players, startingCash, gameStepSequence, roomId} =  game
+   const {signer, currentAccount, balance, tokenBalance, gameContract, } = contract
+   const {players, startingCash, gameStepSequence, roomId, cityId, gameId} =  game
 
    useEffect(() => {
 
@@ -59,6 +59,7 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
 
    }, [players])
 
+   const toWei = (ether: string) => ethers.utils.parseEther(ether)
    
    const handleStakeChange = (event: any) => {
     setStake(event.target.value)
@@ -67,7 +68,7 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
    console.log({currentAccount})
 
 
-    const handleStake = () => {
+    const handleStake = async () => {
         //check
         if (stake < 0.1) {
             return
@@ -89,15 +90,16 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
             isComputer: false
 
           }
-
-         
+          
+          const wei = toWei(`${stake}`);
 
           // add player on chain
+          const addPlayerTxn = await gameContract!.connect(signer!).addPlayer(cityId, gameId, process.env.INPUTAUTH, {value: wei, gasLimit: 100000})
+          await addPlayerTxn.wait()
 
-          
-            socket.emit('add-player-to-room', {roomId, player});
-         // ---
-        // add player socket
+          // add player socket
+        socket.emit('add-player-to-room', {roomId, player});
+         
         setStaked(true);
         
     }

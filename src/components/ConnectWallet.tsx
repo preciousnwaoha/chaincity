@@ -43,18 +43,32 @@ const ConnectWallet = () => {
       setConnecting(true)
   
       /* ------ get signer ------ */
-      const signer = await getSignerData()
-      console.log({signer})
-  
-      /* ------ get signer address ------ */
-      const address = await signer.getAddress()
-      console.log({address})
+      await getSignerData().then(async signer => {
+        console.log({signer}) 
+        await signer.getAddress().then(async address => {
+          console.log({address})
+
+          const balanceWei = await provider!.getBalance(address)
+          const balance = Number(ethers.utils.formatEther(balanceWei))
+          console.log({balance})
+
+          const tokenBalance = await getBalance(address, signer)
+          console.log({tokenBalance})
+          
+          console.log({balance})
+            dispatch(contractActions.stageAccount({currentAccount: address, accounts: [address], signer, tokenBalance, balance}))
+      
+            setConnecting(false)
+          
+        })
+      
+      })
       
   
       /* ------ get signer balance ------ */
       const balance =  1 // await getBalance(address, signer)
       
-      dispatch(contractActions.stageAccount({currentAccount: address, accounts: [address], signer, tokenBalance: balance}))
+      
       
       setConnecting(false)
   

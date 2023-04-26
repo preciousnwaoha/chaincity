@@ -26,20 +26,21 @@ const AddPlayer = () => {
   const contract = useSelector((state: RootState) => state.contract)
 
     const {roomId, players, gameStepSequence, startingCash, gameId, cityId, playing } = game;
-    const {currentAccount} = contract;
+    const {currentAccount, gameContract, signer} = contract;
 
     
     const isStarter = (currentAccount === players[0].address);
 
     
-      let canStartGame =isStarter && (players.length >= 2)
+    let canStartGame =isStarter && (players.length >= 2)
 
       
    console.log({playing})
 
-      const handleStartGame = () => {
+      const handleStartGame = async () => {
         // startgame on chain
-        console.log('red')
+        const startGameTxn = await gameContract!.connect(signer!).startGame(gameId, process.env.INPUTAUTH)
+        await startGameTxn.wait()
         // startgame on socket
         socket.emit('start-game', {roomId, turn: 0})
         dispatch(gameActions.startGame())

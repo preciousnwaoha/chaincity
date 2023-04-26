@@ -13,6 +13,7 @@ import Trade from './Trade'
 // import PayingRent from './PayingRent'
 
 import {io} from "socket.io-client";
+import EndGame from './EndGame'
 
 const socket = io('http://localhost:3001');
 
@@ -35,6 +36,8 @@ const Plate = ({divisions} : PlateProps) => {
   const {players, lands,  turn, gameStepSequence, roomId, playerHasWon} = game
   const {currentAccount} = contract
 
+
+
   
   const player = players[turn]
   console.log(player.position)
@@ -46,15 +49,9 @@ const Plate = ({divisions} : PlateProps) => {
 
   let cellsArray = Array((x * y)).fill("cell")
 
-  // const handlePayRent = (_landID: string) => {
-  //   const land = getLandFromID(_landID, lands)
-  //   const hasOwner = !!land.owner
-  //   const isOwner = land.owner === player.address
-  //   if (hasOwner && !isOwner) {
-  //     dispatch(gameActions.payRent({player: turn, landID: player.position}))
-      
-  //   }
-  // }
+  const client =  players.filter(player => player.address === currentAccount)[0]
+  const clientIsBankrupt = client.bankrupt
+
 
 
   useEffect(() => {
@@ -104,25 +101,25 @@ const Plate = ({divisions} : PlateProps) => {
   }
 
   useEffect(() => {
+    
 
-    if (players[turn].bankrupt === true) {
+    if (players[turn].bankrupt === true) { // next if player is bankrupt
       socket.emit('next-turn', {roomId})
       dispatch(gameActions.nextTurn())
-    } else if (offers.length > 0) {
+    } 
+    else if (playerHasWon === true) { // end game if it's winners turn
+      const winningPlayer = players.filter(player => player.bankrupt === false)[0]
+      const clientIsWinner = winningPlayer.address === currentAccount
+      if (clientIsWinner) {
+        setShowEndGame(true)
+      }
+    } 
+    else if (offers.length > 0) {
       setShowPendingTradeOffers(true)
     }
     console.log(offers)
   }, [turn, offers])
 
-  useEffect(() => {
-    if (playerHasWon === true) {
-      const winningPlayer = players.filter(players => player.bankrupt === false)[0]
-      const clientIsWinner = winningPlayer.address === currentAccount
-      if (clientIsWinner) {
-        setShowEndGame(true)
-      }
-    }
-  }, [playerHasWon])
 
 
 
@@ -184,10 +181,17 @@ const Plate = ({divisions} : PlateProps) => {
             turn={player.turn}
           />
         })}
-        
-        {!showPendingTradeOffers && <DiceRoll onRollDice={handleRollDice} />}
+        {showEndGame ? 
+        <EndGame />
+        : <>
+        {!clientIsBankrupt && <>
+        {(!showPendingTradeOffers) && <DiceRoll onRollDice={handleRollDice} />}
         {showCurrentPlayerActions && <PlayerActions open={showCurrentPlayerActions} onFinishTurn={handleFinishTurn} />}
         <Trade open={showPendingTradeOffers} onClose={handleCloseTrade}/>
+        </>}
+      
+        </>}
+        
     </Box>
   )
 }

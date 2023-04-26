@@ -42,19 +42,14 @@ const Players = () => {
 
     const {position: landID} = client
 
-    const land = getLandFromID(landID, lands)
+    
 
-    const handleBankrupt = () => {
-        
-        let landOwnerIndex = players.length
+    const handleBankrupt = (index: number) => {
 
-      for (let i = 0; i < players.length; i++) {
-        if (players[i].address === land.owner) {
-          landOwnerIndex = i
-        }
-      }
+        // const land = getLandFromID(players[index].position, lands)
+        const bankrupter = players.filter(player => player.turn !== index)[0].turn
 
-      const stateData = {player: turn, bankrupter: landOwnerIndex}
+      const stateData = {player: index, bankrupter}
       socket.emit('bankrupt', {roomId, stateData})
       dispatch(gameActions.bankrupt(stateData))
     }
@@ -69,7 +64,7 @@ const Players = () => {
             console.log('bankrupt')
             dispatch(gameActions.bankrupt(stateData))
           })
-    })
+    }, [players])
 
 
 
@@ -110,7 +105,10 @@ const Players = () => {
                             color: "white"
                         }}>{player.name}</Typography>
                     </Box>
-                    {(player.address === currentAccount) && <Box onClick={handleBankrupt}>BANKRUPT</Box>}
+                    {player.bankrupt && <>
+                        {(player.address === currentAccount) && <Box onClick={() => {handleBankrupt(player.turn)}}>BANKRUPT</Box>}
+                    </>}
+                    
                     <Typography variant="body1" sx={{
                         color: "white",
                     }}>{tokenSymbol}{player.cash}</Typography>

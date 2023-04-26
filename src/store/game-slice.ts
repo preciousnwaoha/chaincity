@@ -19,7 +19,8 @@ export interface GameState {
     playerHasWon: boolean,
     gameId: number,
     cityId: number,
-    roomId: string
+    roomId: string,
+    fallingOrder: number[]
 }
 
   
@@ -40,6 +41,7 @@ const initialState: GameState = {
     gameId: 0,
     cityId: 0,
     roomId: '',
+    fallingOrder: []
 }
 
 const gameSlice = createSlice( {
@@ -91,8 +93,13 @@ const gameSlice = createSlice( {
                 timestamp: new Date().getTime()
             }]
         },
-        togglePlaying(state) {
-            state.playing = !state.playing
+        endGame(state) {
+            state.playing = false
+            state.turn = 0
+            state.logs = [...state.logs, {
+                message: "Game Ended",
+                timestamp: new Date().getTime()
+            }]
         },
         setStartingCash(state, action: PayloadAction<number>) {
             state.startingCash = action.payload
@@ -540,7 +547,7 @@ const gameSlice = createSlice( {
 
                 }
 
-                
+                state.fallingOrder = [...state.fallingOrder, action.payload.player]
                 state.players = updatedPlayers
                 state.lands = updatedLands
                 state.logs = [...state.logs, {
@@ -556,7 +563,8 @@ const gameSlice = createSlice( {
                     }
                 })
 
-                state.playerHasWon = true
+                state.playerHasWon = playersLeft === 1
+                
 
         }
     }
