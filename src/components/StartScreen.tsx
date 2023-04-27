@@ -15,7 +15,7 @@ import { LANDS, LAND_SETS } from '@/utils/monopoly-data'
 
 import {io} from "socket.io-client";
 
-const socket = io('http://localhost:3001');
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL!);
 
 
 interface startScreenInterface {
@@ -64,7 +64,7 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
 
     
     // create game on chain
-    const createGameTxn = await gameContract!.connect(signer!).createGame(cityId, 1500, process.env.INPUTAUTH)
+    const createGameTxn = await gameContract!.connect(signer!).createGame(cityId, 1500, process.env.NEXT_PUBLIC_INPUTAUTH)
     await createGameTxn.wait();
 
     const roomId = `${Math.random() * 10000000000^2}`

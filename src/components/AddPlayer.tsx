@@ -16,7 +16,7 @@ import { CHARACTERS } from "@/utils/monopoly-data";
 import {io} from "socket.io-client";
 import { PlayerInterface } from "@/utils/data.types";
 
-const socket = io('http://localhost:3001');
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL!);
 
 const AddPlayer = () => {
     const router = useRouter()

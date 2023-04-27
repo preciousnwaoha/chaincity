@@ -17,7 +17,7 @@ import GamePopup from './GamePopup'
 import {io} from "socket.io-client";
 import { LandInterface } from '@/utils/data.types'
 
-const socket = io('http://localhost:3001');
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL!);
 
 interface PlayerActionsProps {
     open: boolean,

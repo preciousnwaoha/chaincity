@@ -18,7 +18,7 @@ import { CHARACTERS } from "@/utils/monopoly-data";
 
 import {io} from "socket.io-client";
 
-const socket = io('http://localhost:3001');
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL!);
 
 interface StakeInterface {
     onDone: () => void,
@@ -94,7 +94,7 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
           const wei = toWei(`${stake}`);
 
           // add player on chain
-          const addPlayerTxn = await gameContract!.connect(signer!).addPlayer(cityId, gameId, process.env.INPUTAUTH, {value: wei, gasLimit: 100000})
+          const addPlayerTxn = await gameContract!.connect(signer!).addPlayer(cityId, gameId, process.env.NEXT_PUBLIC_INPUTAUTH, {value: wei, gasLimit: 100000})
           await addPlayerTxn.wait()
 
           // add player socket

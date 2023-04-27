@@ -12,7 +12,7 @@ import {io} from "socket.io-client";
 import { PlayerInterface } from '@/utils/data.types';
 import { useRouter } from 'next/router'
 
-const socket = io('http://localhost:3001');
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL!);
 
 interface EndGameInterface {
     winnerPlayer: PlayerInterface,
@@ -46,7 +46,7 @@ const EndGame = () => {
         
 
         // end on chain
-        const endGameTxn = await gameContract!.connect(signer!).endGame(gameId, winAddrOrder, winnerPlayer.cash, process.env.INPUTAUTH)
+        const endGameTxn = await gameContract!.connect(signer!).endGame(gameId, winAddrOrder, winnerPlayer.cash, process.env.NEXT_PUBLIC_INPUTAUTH!)
         await endGameTxn.wait()
 
         // end socket
