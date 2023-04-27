@@ -46,7 +46,7 @@ const EndGame = () => {
         
 
         // end on chain
-        const endGameTxn = await gameContract!.connect(signer!).endGame(gameId, winAddrOrder, winnerPlayer.cash, process.env.NEXT_PUBLIC_INPUTAUTH!)
+        const endGameTxn = await gameContract!.connect(signer!).endGame(gameId, winAddrOrder, winnerPlayer.cash, process.env.NEXT_PUBLIC_INPUTAUTH!, {gasLimit: 100000})
         await endGameTxn.wait()
 
         // end socket

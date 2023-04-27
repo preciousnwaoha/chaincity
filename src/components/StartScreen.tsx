@@ -64,7 +64,7 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
 
     
     // create game on chain
-    const createGameTxn = await gameContract!.connect(signer!).createGame(cityId, 1500, process.env.NEXT_PUBLIC_INPUTAUTH)
+    const createGameTxn = await gameContract!.connect(signer!).createGame(cityId, 1500, process.env.NEXT_PUBLIC_INPUTAUTH, {gasLimit: 100000})
     await createGameTxn.wait();
 
     const roomId = `${Math.random() * 10000000000^2}`
