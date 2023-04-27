@@ -64,8 +64,13 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
 
     
     // create game on chain
-    const createGameTxn = await gameContract!.connect(signer!).createGame(cityId, 1500, process.env.NEXT_PUBLIC_INPUTAUTH, {gasLimit: 100000})
+    const createGameTxn = await gameContract!.connect(signer!).createGame(1, 1500, process.env.NEXT_PUBLIC_INPUTAUTH, {gasLimit: 100000})
     await createGameTxn.wait();
+
+    const cityId = 1
+    const gameId = createGameTxn
+
+    console.log(gameId)
 
     const roomId = `${Math.random() * 10000000000^2}`
     
@@ -77,8 +82,8 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
       startingCash: 1500,
       bankCash: 100000,
       landSets: LAND_SETS,
-      gameId: 100,
-      cityId: 100,
+      gameId,
+      cityId,
       roomId,
     }))
 
@@ -101,7 +106,8 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
       setShowNoRoom(true)
     })
 
-    socket.on('joined-room', (roomId) => {
+    socket.on('joined-room', ({roomId, gameId}) => {
+      const cityId = 1
 
       dispatch(gameActions.createGame({
         lands: usedLands,
@@ -109,8 +115,8 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
         startingCash: 1500,
         bankCash: 100000,
         landSets: LAND_SETS,
-        gameId: 100,
-        cityId: 100,
+        gameId,
+        cityId,
         roomId,
       }))
 

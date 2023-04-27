@@ -19,9 +19,6 @@ import { contractActions } from "@/store/contract-slice"
 import Stake from "@/components/Stake"
 import AddPlayer from "@/components/AddPlayer"
 import ConnectWallet from "@/components/ConnectWallet"
-const CONTRACT_ADDRESS = "0xC410679CEE6faf3e5D0F99666FCEAa6236564157"
-const TOKEN_ADDRESS = "0x6B834621B5891AaFe77EDea2BC257049013e5C86"
-
 
 export default function Home() {
   const dispatch = useDispatch()
@@ -41,14 +38,16 @@ export default function Home() {
   
       if (provider !== undefined) {
         const gameContract = new ethers.Contract(
-          CONTRACT_ADDRESS,
+          process.env.NEXT_PUBLIC_GAME_CONTRACT_ADDRESS!,
           artifact.abi,
           provider
         )
         console.log("gameContract: ", gameContract)
         
         const tokenContract = new 
-          ethers.Contract(TOKEN_ADDRESS, genericErc20Abi.abi, provider)
+          ethers.Contract(
+            process.env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS!, 
+            genericErc20Abi.abi, provider)
         console.log("tokenContract: ", tokenContract)
 
         

@@ -94,7 +94,7 @@ const Stake = ({onDone, onBack} : StakeInterface) => {
           const wei = toWei(`${stake}`);
 
           // add player on chain
-          const addPlayerTxn = await gameContract!.connect(signer!).addPlayer(cityId, gameId, process.env.NEXT_PUBLIC_INPUTAUTH, {value: wei, gasLimit: 100000})
+          const addPlayerTxn = await gameContract!.connect(signer!).addPlayer(1, gameId, process.env.NEXT_PUBLIC_INPUTAUTH, {value: wei, gasLimit: 100000})
           await addPlayerTxn.wait()
 
           // add player socket
