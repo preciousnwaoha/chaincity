@@ -42,39 +42,7 @@ const SelectNet = ({onSelectedNet, onBack}: SelectNetInterface) => {
         onBack()
     }
 
-    const getBalance = async (_address :string, _signer: ethers.providers.JsonRpcSigner) => {
-        let balance = await tokenContract!.connect(_signer!).balanceOf(_address)
-        balance = parseFloat(ethers.utils.formatEther(balance))
-        
-        return balance
-       }
 
-    const getSignerData = async () => {
-        provider!.send("eth_requestAccounts", [])
-        const signer = provider!.getSigner()
-        return signer
-       }
-
-    const connectWallet = async () => {
-        if (!window.ethereum) {
-          alert("Get MetaMask!");
-          return;
-        }
-    
-        /* ------ get signer ------ */
-    const signer = await getSignerData()
-    console.log({signer})
-
-    /* ------ get signer address ------ */
-    const address = await signer.getAddress()
-    console.log({address})
-     
-  
-    /* ------ get signer balance ------ */
-    const balance = await getBalance(address, signer)
-        
-        dispatch(contractActions.stageAccount({currentAccount: address, accounts: [address], signer, tokenBalance: balance}))
-     }
 
    
 
@@ -148,7 +116,7 @@ const SelectNet = ({onSelectedNet, onBack}: SelectNetInterface) => {
 
         
         </Box>
-        {((network !== "none") && disconnected)&& <Button variant="contained" onClick={connectWallet}>CONNECT WALLET</Button>}
+        
         {!disconnected && <Typography>Connected</Typography>}
         
         <Box sx={{
