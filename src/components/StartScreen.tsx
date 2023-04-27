@@ -74,7 +74,7 @@ const StartScreen = ({onHandleNewGame}: startScreenInterface) => {
 
     const roomId = `${Math.random() * 10000000000^2}`
     
-    socket.emit('create-room', {roomId})
+    socket.emit('create-room', {roomId, gameId})
 
     dispatch(gameActions.createGame({
       lands: usedLands,
